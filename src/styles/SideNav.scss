@@ -1,0 +1,59 @@
+@use 'library' as *;
+
+.sidenav {
+    position: fixed;
+    height: 100vh;
+    width: 200px;
+    background-color: $paper-grey;
+    transition: .2s;
+    overflow: hidden;
+    box-shadow: 2px 0 4px 2px #181822;
+    z-index: 2;
+}
+
+.sidenav-container {
+    display: flex;
+    flex-direction: column;
+    color: $white;
+    gap: $spacing*2;
+    padding: $spacing*2;
+}
+
+.address-form {
+    display: flex;
+    flex-direction: row;
+    gap: $spacing;
+    & input {
+        width: 100%;
+        @include neumorphism-inset;
+        color: $white;
+        border-radius: 4px;
+        padding: $spacing;
+    }
+    
+}
+
+.retry-button {
+    @include neumorphism;
+    animation: fade-in .5s ease;
+    margin-left: 13px;
+    color: $white;
+    border-radius: 4px;
+    padding: 0 4px;
+    padding-top: 2px;
+    vertical-align: bottom;
+    &:hover > * {
+        animation: spin-a-little .5s ease;
+        animation-fill-mode: forwards;
+        cursor: pointer;
+    }
+    &:active {
+        @include neumorphism-inset;
+    }   
+}
+
+@keyframes spin-a-little {
+    0% {transform: rotate(0);}
+    50% {filter: blur(.5px)}
+    100% {transform: rotate(90deg);}
+}

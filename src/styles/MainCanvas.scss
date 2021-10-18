@@ -1,0 +1,57 @@
+@use 'library' as *;
+
+.backdrop {
+    background: checkered($back-grey, $front-grey, 32px);
+    position: absolute;
+    width: 100%;
+    height: 95%;
+    transition: .2s;
+}
+
+.tab {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20em;
+    min-width: 2em;
+    text-align: center;
+    padding: 0 $spacing;
+    margin: 0 $spacing*.25;
+    background-color: #363636;
+    border-top-left-radius: $spacing*.75;
+    border-top-right-radius: $spacing*.75;
+    color: $white;
+    user-select: none;
+    transition: .2s;
+    &:hover {
+        background-color: $back-grey;
+    }
+    &:active {
+        background-color: $front-grey;
+    }
+}
+
+.tab-container {
+    position: relative;
+    transition: .2s;    
+    margin-top: $spacing*.5;
+    display: flex;
+    color: $white
+}
+
+.add-tab {
+    background: none;
+    border: none;
+    border-radius: 50%;
+    color: $white;
+    font-size: 1em;
+    font-weight: bold;
+    transition: .2s;
+    &:hover {
+        background-color: rgba($white, .5)
+    };
+    &:active {
+        background-color: rgba($white, .8)
+    }
+}

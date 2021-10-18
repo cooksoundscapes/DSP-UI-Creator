@@ -1,0 +1,16 @@
+
+@use '../styles/library' as *;
+@use './Knob';
+
+[class^='basic'] {
+    @include neumorphism;
+    background-color: #e7f7fa;
+    color: rgb(23, 19, 41)
+}   
+
+[class$='_panel'] {
+    display: grid;
+    padding: $spacing;
+    border-radius: 2px;
+    place-items: center;
+}

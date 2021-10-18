@@ -1,0 +1,17 @@
+[class$='_knob'] {
+    display: block; 
+    position: absolute;
+    border-radius: 50%;
+    &:hover {
+        cursor: grab;
+    }
+    &:before {
+        content: "";
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: rgb(23, 19, 41);
+        width: 2px;
+        height: 30%;
+    }
+}

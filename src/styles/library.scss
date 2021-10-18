@@ -1,0 +1,36 @@
+
+$white: #d1d1d1;
+
+$spacing: 8px;
+
+$front-grey: #545454;
+$back-grey: #2e2e2e;
+$paper-grey: #3e3e3e;
+
+@function checkered($color1, $color2,$segment) {
+    $color1: rgba($color1,.5);
+    $color2: rgba($color2,.5);
+    @return repeating-linear-gradient(to bottom, $color2, $color2 1px, $color1 1px, $color1 $segment), repeating-linear-gradient(to right, $color2, $color2 1px, $color1 1px, $color1 $segment);
+}
+
+@mixin neumorphism {
+    border: none;
+    background-color: inherit;
+    box-shadow: 2px 2px 4px #2e2e2e, -2px -2px 4px rgba(#555, .75);
+}
+
+@mixin neumorphism-inset {
+    border: none;
+    background-color: inherit;
+    box-shadow: inset 2px 2px 4px #2e2e2e, inset -2px -2px 4px rgba(#555, .75);
+}
+
+@keyframes fade-in {
+    from {opacity: 0}
+    to {opacity: 1} 
+}
+
+@keyframes expand {
+    from {transform: scale(0) }
+    to {transform: scale(1) } 
+}

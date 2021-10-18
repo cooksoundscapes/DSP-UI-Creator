@@ -1,0 +1,19 @@
+@use 'library' as * ;
+
+.tooltip-box {
+    position: absolute;
+    padding: 2px $spacing;
+    max-width: 20em;
+    box-shadow: 2px 2px 4px #2e2e3e;
+    background-color: #bbb;
+    border-radius: 4px;
+    animation: fade-in .5s;
+    font-size: smaller;
+    user-select: none;
+    z-index: 100
+}
+
+@keyframes fade-in {
+    from {opacity: 0}
+    to {opacity: 1} 
+}
