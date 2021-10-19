@@ -4,7 +4,7 @@ import '../styles/Tooltip.scss';
 
 const Tooltip = props => {
     const [visible, setVisible] = useState(false);
-    const [pos, setPos] = useState({x:0, y:0});
+    const [pos, setPos] = useState([0, 0]);
     let timer_id;
 
     useEffect( () => { 
@@ -12,8 +12,9 @@ const Tooltip = props => {
         if (visible) {
             timer_id = setTimeout(() => {
                 render( 
-                    <article style={{left: pos.x+10, top: pos.y}} 
-                    className='tooltip-box' >{props.text}</article>
+                    <article style={{left: pos[0]+10, top: pos[1]}} 
+                    className={props.balloon ? 'tooltip-balloon' : 'tooltip-box'} >
+                        {props.text} </article>
                 , anchor)
             }, 500);
         } else {
@@ -22,9 +23,17 @@ const Tooltip = props => {
         return () => clearTimeout(timer_id)
     }, [visible])
     
-    const showTip = event => {
-        setVisible(true)
-        setPos({x:event.target.offsetLeft + event.target.offsetWidth, y:event.target.offsetTop})
+    const showTip = ({currentTarget}) => {
+        const rect = currentTarget.getBoundingClientRect();
+        /*let padding = window.getComputedStyle(currentTarget, null).getPropertyValue('padding-left');
+        padding = parseFloat(padding);*/
+        const offset = props.place == 'side' ? [rect.width, rect.height*.2] : 
+                        [-rect.width, -rect.height];
+        setPos([
+            rect.x + offset[0],
+            rect.y + offset[1]
+        ]);
+        setVisible(true);
     }
     const hideTip = () => {
         setVisible(false)

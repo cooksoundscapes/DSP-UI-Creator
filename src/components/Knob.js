@@ -12,8 +12,7 @@ const Knob = props => {
                       event.clientY - startPos[1]];
         const increment = move[0] - move[1];
         const newVal = Math.max(min, Math.min(max, value + increment));
-        const path = '/'+props.id;
-        props.sendMessage(props.id, 'value', newVal, path)
+        props.sendMessage(props.id, 'value', newVal, props.path)
     }
     const endMove = () => {
         window.removeEventListener('mousemove', moving)

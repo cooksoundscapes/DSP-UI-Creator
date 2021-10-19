@@ -1,11 +1,11 @@
-
-$white: #d1d1d1;
-
 $spacing: 8px;
-
+$white: #d1d1d1;
 $front-grey: #545454;
 $back-grey: #2e2e2e;
 $paper-grey: #3e3e3e;
+$dark-shadow: #2e2e3e; 
+$light-shadow: #555560;
+$darker-shadow: #181822;
 
 @function checkered($color1, $color2,$segment) {
     $color1: rgba($color1,.5);
@@ -16,13 +16,13 @@ $paper-grey: #3e3e3e;
 @mixin neumorphism {
     border: none;
     background-color: inherit;
-    box-shadow: 2px 2px 4px #2e2e2e, -2px -2px 4px rgba(#555, .75);
+    box-shadow: 2px 2px 4px $dark-shadow, -2px -2px 4px rgba($light-shadow, .75);
 }
 
 @mixin neumorphism-inset {
     border: none;
     background-color: inherit;
-    box-shadow: inset 2px 2px 4px #2e2e2e, inset -2px -2px 4px rgba(#555, .75);
+    box-shadow: inset 2px 2px 4px $dark-shadow, inset -2px -2px 4px rgba($light-shadow, .75);
 }
 
 @keyframes fade-in {

@@ -1,0 +1,25 @@
+@use 'library' as *;
+
+.component-menu {
+    display: flex;
+    gap: 2px;
+    position: absolute;
+    background-color: $paper-grey;
+    box-shadow: 0px 0px 8px 2px $dark-shadow;
+    color: $white;
+    transition: .1s;
+    padding: $spacing*.5;
+    animation: fade-in .3s;
+    & button {
+        color: $white;
+        font-size: 1em;
+        padding: $spacing*.5 $spacing;
+        background: none;
+        border: none;
+        border-radius: 4px;
+        transition: .5s;
+        &:active {
+            background-color: rgba(#eee,.5);
+        }
+    }
+}

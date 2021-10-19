@@ -20,9 +20,10 @@ const ToolBox = () => {
             const setup = tools[tool+'_setup'];
             let helptext;
             if (setup) helptext = setup.description;
-
             const item = (    
-            <Tooltip key={tool+'_tt'} text={helptext || 'No one described this... yet!'}>
+            <Tooltip key={tool+'_tt'}
+                     place='side'
+                     text={helptext || 'No one described this... yet!'}>
                 <li draggable onDragStart={handleDrag} onDragEnd={dragEnd} key={tool} >
                     {tool}
                 </li>

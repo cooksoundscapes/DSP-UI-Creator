@@ -4,13 +4,40 @@
     position: absolute;
     padding: 2px $spacing;
     max-width: 20em;
-    box-shadow: 2px 2px 4px #2e2e3e;
+    box-shadow: 2px 2px 4px $dark-shadow;
     background-color: #bbb;
     border-radius: 4px;
     animation: fade-in .5s;
     font-size: smaller;
     user-select: none;
-    z-index: 100
+    z-index: 100;
+    pointer-events: none;
+}
+
+.tooltip-balloon {
+    position: absolute;
+    padding: 2px $spacing;
+    max-width: 20em;
+    background-color: $darker-shadow;
+    color: $white;
+    border-radius: 4px;
+    animation: fade-in .5s;
+    font-size: smaller;
+    user-select: none;
+    z-index: 100;
+    pointer-events: none;
+    &:after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        bottom: -4px;
+        left: 40%;
+        border-bottom: 10px solid $darker-shadow;
+        border-right: 10px solid transparent;
+        border-right: 10px solid transparent;
+        transform: rotate(-45deg)
+    }
 }
 
 @keyframes fade-in {

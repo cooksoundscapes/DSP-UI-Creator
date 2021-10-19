@@ -1,10 +1,9 @@
-import Panel from './Panel';
+
 import {useEffect, useRef} from 'react';
-import Knob, {setup as Knob_setup} from './Knob';
 
 const ADSR = props => {
     const cnv = useRef()
-    const {values, maxTime, AtkCurve, DecCurve, RelCurve} = props;
+    const {values, maxTime, AtkCurve, DecCurve, RelCurve, path} = props;
     //Atk, dec and rel values are in Ms and grow on exponential curve; for drawing,
     //convert them to 0-1 range and back to linear values;
     const lin_values = values.map( (v,i) => i != 2 ? Math.pow(v / maxTime, .25) : v); 
@@ -52,7 +51,7 @@ const ADSR = props => {
         ctx.fill()
     }, [values])
 
-    let startPos, x_pos, type, path = `/${props.id}`;
+    let startPos, x_pos, type;
 
     const handleDrag = event => {
         startPos = [event.clientX, event.clientY];

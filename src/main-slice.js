@@ -22,7 +22,12 @@ export const MainSlice = createSlice({
             const index = state.objectModel.findIndex( i => i.id == id);
             state.objectModel[index].x = newX;
             state.objectModel[index].y = newY
+        },
+        deleteObject: (state, id) => {
+            const index = state.objectModel.findIndex( i => i.id == id.payload);
+            state.objectModel = state.objectModel.splice(index, 1)
         }
+        
     }
 })
 

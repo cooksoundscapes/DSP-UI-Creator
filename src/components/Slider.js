@@ -2,12 +2,11 @@
 const Slider = (props) => {
     
     const handleChange = ({target}) => {
-        const path = '/'+props.id;
-        props.sendMessage(props.id, 'value', target.value, path)
+        props.sendMessage(props.id, 'value', target.value, props.path)
     }
     
     return (
-        <label className={props.theme+'_label'}>{props.label}
+        <label className='label' >{props.label}
             <input onChange={handleChange} 
             type='range' min={props.min} max={props.max} value={props.value} />
         </label>

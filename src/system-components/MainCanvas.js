@@ -4,9 +4,12 @@ import * as library from '../components';
 //redux objects
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleMode, addObject, updateParams, repositionObj } from '../main-slice';
+import ComponentMenu from './ComponentMenu';
 
 export default function MainCanvas() {
     const [pages, setPages] = useState(1);
+    const [menuTarget, setObjMenu] = useState(null);
+    const [dragging, setDragging] = useState(false);
     const navWidth = 200;
     const dispatcher = useDispatch();
     const editMode = useSelector( state => state.global.editMode);
@@ -15,7 +18,10 @@ export default function MainCanvas() {
     
     useEffect( () => {
         const toggleEdit = event => {
-            if( event.key == '.' && event.ctrlKey) dispatcher(toggleMode());
+            if( event.key == '.' && event.ctrlKey) {
+                dispatcher(toggleMode());
+                setObjMenu(null)
+            }
         }   
         window.addEventListener('keypress', toggleEdit);
         return () => window.removeEventListener('keypress', toggleEdit);
@@ -23,6 +29,7 @@ export default function MainCanvas() {
     const handleDragOver = event => {
         event.preventDefault();
     }
+
     const handleDrop = event => {
         const type = event.dataTransfer.getData('text');
         if (!(type in library)) {
@@ -43,6 +50,7 @@ export default function MainCanvas() {
 
     const renderElements = () => {
         const startDrag = event => {
+            setDragging(true)
             const dummy = document.createElement('span');
             event.dataTransfer.setDragImage(dummy, 0, 0);
             event.dataTransfer.setData('text', event.target.id);
@@ -64,6 +72,7 @@ export default function MainCanvas() {
                 }
             }
             const _endDrag = () => {
+                setDragging(false)
                 object.removeEventListener('drag', _moveEl);
                 object.removeEventListener('dragend', _endDrag);
             }
@@ -75,6 +84,11 @@ export default function MainCanvas() {
             dispatcher(updateParams({id, param, value}));
             window.electron.sendOSC(path, value, address);    
         }
+        const openMenu = event => {
+            event.stopPropagation()
+            if (event.target.id == menuTarget) setObjMenu(null);
+            else setObjMenu(event.target.id)
+        } 
         return objectModel.map( tool => {
             const style = {
                 position: 'absolute',
@@ -87,10 +101,12 @@ export default function MainCanvas() {
             const key = tool.id;
             const wrapperProps = {
                 style, key, id:key, draggable: editMode, 
-                onDragStart: editMode? startDrag: null
+                onDragStart: editMode ? startDrag: null,
+                onClick: editMode ? openMenu : null
             }
+            const path = '/'+key;
             const NewElement = React.createElement(library[tool.type], 
-                {...tool.params, id: key, sendMessage});
+                {...tool.params, id: key, path, sendMessage});
             return (
                 <div {...wrapperProps} > 
                     {editMode ? 
@@ -100,7 +116,7 @@ export default function MainCanvas() {
             )
         });
     }
-
+    
     const renderTabs = () => {
         const tabs = [];
         for (let i = 0; i < pages; i++) {
@@ -108,8 +124,11 @@ export default function MainCanvas() {
         }
         return tabs
     }
+    const closeObjMenu = event => { 
+        setObjMenu(null)
+    }
     return (
-        <main onDrop={handleDrop} onDragOver={handleDragOver} style={{flexGrow: 1}}>
+        <main onClick={closeObjMenu} onDrop={handleDrop} onDragOver={handleDragOver} style={{flexGrow: 1}}>
             <div className='tab-container' style={{left: editMode ? navWidth : 0}}> 
                     {renderTabs()} 
                     <button className='add-tab' onClick={ () => setPages(pages+1) }>+</button>
@@ -119,8 +138,9 @@ export default function MainCanvas() {
                              height: '100%', 
                              position: 'absolute',
                              top: editMode?-12:0, 
-                             left:editMode?-12:0}}>
+                             left:editMode?-12:0}} >
                 {renderElements()}
+                {(menuTarget && !dragging) ? <ComponentMenu targetid={menuTarget}/> : null}
                 </div>
             </div>
         </main>
