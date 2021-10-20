@@ -13,11 +13,13 @@ export default function SideNav() {
             <div className='sidenav-container'>
                 <div className='address-form'>
                 <label style={{width: '10em'}}>address:
-                    <input type='text' className='address-input' value={address[0]} 
+                    <input spellCheck={false} type='text' 
+                    className='address-input' value={address[0]} 
                     onChange={ ({target}) => dispatcher(setAddr(target.value))} />
                 </label>      
                 <label style={{width: '4em'}}>port:
-                    <input type='text' className='address-input' value={address[1]}
+                    <input spellCheck={false} type='text' 
+                    className='address-input' value={address[1]}
                     onChange={ ({target}) => dispatcher(setPort(target.value))} />
                 </label>
                 </div>

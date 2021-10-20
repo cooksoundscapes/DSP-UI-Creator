@@ -49,7 +49,7 @@ const ADSR = props => {
         ctx.bezierCurveTo(...RelCtrlPoint, ...RelCtrlPoint, R, height);
         ctx.stroke();
         ctx.fill()
-    }, [values])
+    }, [values, props.size])
 
     let startPos, x_pos, type;
 
@@ -98,7 +98,7 @@ const ADSR = props => {
     }
 
     return (
-        <canvas className='adsr-canvas' ref={cnv} 
+        <canvas width={props.size} height={props.size*.5} className='adsr-canvas' ref={cnv} 
             style={{position: 'relative', width: '100%', height: '100%'}} 
             onMouseDown={handleDrag} />
     )
@@ -108,6 +108,7 @@ export default ADSR;
 
 export const setup = {
     description: 'Classic ADSR controls',
+    size: 128,
     values: [5, 3000, .5, 600],
     AtkCurve: 0.5,
     DecCurve: 0.5,

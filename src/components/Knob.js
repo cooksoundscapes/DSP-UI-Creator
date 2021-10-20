@@ -1,7 +1,6 @@
 const Knob = props => {
-    const {min, max, value, size} = props;
+    const {min, max, value, size, ring} = props;
     let startPos;
-    
     const turnKnob = event => {
         startPos = [event.clientX, event.clientY];
         window.addEventListener('mousemove', moving)
@@ -18,29 +17,29 @@ const Knob = props => {
         window.removeEventListener('mousemove', moving)
         window.removeEventListener('mouseup', endMove)
     }
-
+    const ringStyle = {
+        width: size+16,
+        height: size+16,
+        padding: 7,
+        borderRadius: '50%',
+        borderTop: `solid 1px ${props.labelColor}`,
+        borderLeft: `solid 1px ${props.labelColor}`,
+        borderRight: `solid 1px ${props.labelColor}`,
+        borderBottom: 'solid 1px transparent'
+    }
     return (
-        <div style={{width: size+16, 
+        <div style={{width: size + (ring ? 16 : 0), 
                      textAlign: 'center', 
                      userSelect: 'none'}}>
-            <div style={{
-                width: size+16,
-                height: size+16,
-                padding: 7,
-                borderRadius: '50%',
-                borderTop: `solid 1px ${props.labelColor}`,
-                borderLeft: `solid 1px ${props.labelColor}`,
-                borderRight: `solid 1px ${props.labelColor}`,
-                borderBottom: 'solid 1px transparent'
-            }}>
-                <span className={props.theme+'_knob'} 
-                    style={{width: size, height: size}}></span>
-                <span className={props.theme+'_knob'} onMouseDown={turnKnob}
-                    style={{width: size, height: size,
-                    transform: `rotate(${(value/max*280)-140}deg)`,
-                    boxShadow: 'none'}}></span>
-            </div>
-            <span style={{color: props.labelColor}}>
+            <div style={ring ? ringStyle : {width: size,height: size}}>
+            <span className={props.theme+'_knob'} 
+                style={{width: size, height: size}}></span>
+            <span className={props.theme+'_knob'} onMouseDown={turnKnob}
+                style={{width: size, height: size,
+                transform: `rotate(${(value/max*270)-135}deg)`,
+                boxShadow: 'none'}}></span>
+        </div>
+            <span style={{  color: props.labelColor}}>
                 {props.label} </span>
         </div>
     )
@@ -54,8 +53,9 @@ export const setup = {
     labelColor: '#d1d1d1',
     min: 0,
     max: 127,
-    value: 32,
+    value: 64,
     theme: 'basic',
-    size: 64,
+    ring: false,
+    size: 48,
     markers: []
 }

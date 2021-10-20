@@ -1,9 +1,9 @@
 import '../styles/MainCanvas.scss';
 import React, { useState, useEffect } from 'react';
 import * as library from '../components';
-//redux objects
 import { useSelector, useDispatch } from 'react-redux';
-import { toggleMode, addObject, updateParams, repositionObj } from '../main-slice';
+import { toggleMode, addObject, 
+        updateParams, repositionObj } from '../main-slice';
 import ComponentMenu from './ComponentMenu';
 
 export default function MainCanvas() {
@@ -11,6 +11,7 @@ export default function MainCanvas() {
     const [menuTarget, setObjMenu] = useState(null);
     const [dragging, setDragging] = useState(false);
     const navWidth = 200;
+    const grid = 16;
     const dispatcher = useDispatch();
     const editMode = useSelector( state => state.global.editMode);
     const address = useSelector( state => state.global.ipAddr);
@@ -21,6 +22,9 @@ export default function MainCanvas() {
             if( event.key == '.' && event.ctrlKey) {
                 dispatcher(toggleMode());
                 setObjMenu(null)
+            } else if (event.key == 'C' && event.ctrlKey) {
+                event.preventDefault()
+                console.log('gonna copy!')
             }
         }   
         window.addEventListener('keypress', toggleEdit);
@@ -43,7 +47,8 @@ export default function MainCanvas() {
             if (item.type == type) count++
         }
         const id = type+(count+1);
-        const newEntry = {id, type, x, y, params};
+        const path = '/'+id;
+        const newEntry = {id, type, path, x, y, params};
         if (params.container) newEntry.childNodes = [];
         dispatcher(addObject(newEntry))
     }
@@ -79,6 +84,37 @@ export default function MainCanvas() {
             object.addEventListener('drag', _moveEl);
             object.addEventListener('dragend', _endDrag);
         }
+        const startResizing = event => {
+            event.stopPropagation();
+            const dummy = document.createElement('span');
+            event.dataTransfer.setDragImage(dummy, 0, 0);
+            event.dataTransfer.setData('text', event.target.id);
+            const id = event.target.offsetParent.id;
+            const obj = objectModel.find( o => o.id == id);
+            const startSize = obj.params.size;
+            const startPos = [event.clientX, event.clientY];
+            const resize = event => {
+                let value;
+                let move = [event.clientX - startPos[0],
+                            event.clientY - startPos[1]];
+                if (Array.isArray(startSize)) {
+                    value = [
+                        Math.max(grid, Math.floor(move[0]/grid)*grid+startSize[0]),
+                        Math.max(grid, Math.floor(move[1]/grid)*grid+startSize[1]),
+                    ]
+                } else {
+                    move = move[0] + move[1]; 
+                    value = Math.max(grid, Math.floor(move/grid)*grid+startSize);
+                }
+                dispatcher(updateParams({id, param:'size', value}))
+            }
+            const endDrag = () => { 
+                window.removeEventListener('drag', resize)
+                window.removeEventListener('dragend', endDrag)
+            }
+            window.addEventListener('drag', resize)
+            window.addEventListener('dragend', endDrag)
+        }
         const sendMessage = (id, param, value, path) => {
             if (editMode) return;
             dispatcher(updateParams({id, param, value}));
@@ -88,13 +124,13 @@ export default function MainCanvas() {
             event.stopPropagation()
             if (event.target.id == menuTarget) setObjMenu(null);
             else setObjMenu(event.target.id)
-        } 
+        }
         return objectModel.map( tool => {
             const style = {
                 position: 'absolute',
-                left: tool.x,
-                top: tool.y,
-                padding: editMode ? 12 : 0,
+                left: Math.floor(tool.x/grid)*grid,
+                top: Math.floor(tool.y/grid)*grid,
+                padding: editMode ? grid/2 : 0,
                 background: editMode ? 'rgba(100,100,200,.4)' : null,
                 cursor: editMode ? 'move' : 'default',
             }
@@ -104,13 +140,17 @@ export default function MainCanvas() {
                 onDragStart: editMode ? startDrag: null,
                 onClick: editMode ? openMenu : null
             }
-            const path = '/'+key;
             const NewElement = React.createElement(library[tool.type], 
-                {...tool.params, id: key, path, sendMessage});
+                {...tool.params, id:tool.id, path:tool.path, sendMessage});
             return (
                 <div {...wrapperProps} > 
                     {editMode ? 
-                        <div style={{pointerEvents: 'none'}}>{NewElement}</div> 
+                        <>
+                            <div style={{pointerEvents: 'none'}}>{NewElement}</div> 
+                            <div className='resizing-tool' 
+                                 onDragStart={startResizing} draggable
+                                 style={{width: grid, height: grid}}></div>
+                        </>
                         : NewElement}
                 </div>
             )
@@ -124,7 +164,7 @@ export default function MainCanvas() {
         }
         return tabs
     }
-    const closeObjMenu = event => { 
+    const closeObjMenu = () => { 
         setObjMenu(null)
     }
     return (
@@ -137,10 +177,12 @@ export default function MainCanvas() {
                 <div style={{width: '100%', 
                              height: '100%', 
                              position: 'absolute',
-                             top: editMode?-12:0, 
-                             left:editMode?-12:0}} >
+                             top: editMode ? -grid/2 : 0, 
+                             left:editMode ? -grid/2 : 0}} >
                 {renderElements()}
-                {(menuTarget && !dragging) ? <ComponentMenu targetid={menuTarget}/> : null}
+                {(menuTarget && !dragging) ? 
+                    <ComponentMenu onClose={() => setObjMenu(null)} targetid={menuTarget}/>
+                : null}
                 </div>
             </div>
         </main>

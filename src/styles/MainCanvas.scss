@@ -55,3 +55,12 @@
         background-color: rgba($white, .8)
     }
 }
+
+.resizing-tool {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    border-bottom: double 5px $white;
+    border-right: double 5px $white;
+    cursor: se-resize;
+}

@@ -1,8 +1,12 @@
 
 const Button =  props => {
     const measures = {
-        fontSize: props.size == 'large' ? '2em' : props.size == 'small' ? '.5em' : '1em',
-        padding: props.size == 'large' ? 16 : props.size == 'small' ? 4 : 8,
+        fontSize: props.size >= 128 ? '3em' : 
+                  props.size >= 80 ? '2em' : 
+                  props.size <= 32 ? '.75em' : '1em',
+        padding: props.size >= 80 ? 16 : 
+                 props.size <= 32 ? 4 : 8,
+        
     }
 
     return (
@@ -20,8 +24,8 @@ export default Button;
 
 export const setup = {
     description: 'Stateless click button',
-    label: '',
+    label: 'Click me!',
     theme: 'basic',
-    size: 'medium',
+    size: 48,
     click: null
 }

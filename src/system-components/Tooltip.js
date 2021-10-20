@@ -16,7 +16,7 @@ const Tooltip = props => {
                     className={props.balloon ? 'tooltip-balloon' : 'tooltip-box'} >
                         {props.text} </article>
                 , anchor)
-            }, 500);
+            }, props.delay ? props.delay : 500);
         } else {
             render(null, anchor)
         }
@@ -30,8 +30,8 @@ const Tooltip = props => {
         const offset = props.place == 'side' ? [rect.width, rect.height*.2] : 
                         [-rect.width, -rect.height];
         setPos([
-            rect.x + offset[0],
-            rect.y + offset[1]
+            rect.x + offset[0] + window.scrollX,
+            rect.y + offset[1] + window.scrollY
         ]);
         setVisible(true);
     }

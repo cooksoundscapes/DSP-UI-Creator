@@ -1,10 +1,5 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path')
-
-ipcMain.on('testCH', (event, arg) => {
-  console.log(arg) // prints "ping"
-  //event.reply('asynchronous-reply', 'pong')
-})
 
 function createWindow() {
     const window = new BrowserWindow({

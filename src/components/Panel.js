@@ -23,7 +23,7 @@ export const setup = {
     description: 'empty panel; drop something onto it',
     container: true,
     theme: 'basic',
-    size: [260,260],
+    size: [256,256],
     columns: 2,
     rows: 2,
     label: '',
