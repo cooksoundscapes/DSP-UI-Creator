@@ -48,8 +48,8 @@ const ComponentMenu = props => {
     return (
         <nav onClick={event => event.stopPropagation()} className='component-menu'
              style={{
-                 left: Math.min(target.x+(targetObj.offsetWidth-270)/2, 
-                         window.innerWidth - 270),
+                 left: Math.max(16, Math.min(target.x+(targetObj.offsetWidth-270)/2, 
+                         window.innerWidth - 270)),
                  top: target.y + (target.y > 100 ? -60 : targetObj.offsetHeight + 20)
              }}>
             {renderButtons()}

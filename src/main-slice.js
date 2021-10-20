@@ -32,12 +32,16 @@ export const MainSlice = createSlice({
             const {id, path} = newPath.payload;
             const index = state.objectModel.findIndex( i => i.id == id);
             state.objectModel[index].path = path;
+        },
+        setEntireModel: (state, newModel) => {
+            state.objectModel = newModel.payload.objectModel;
+            state.ipAddr = newModel.payload.address;
         }
     }
 })
 
 export const { toggleMode, setAddr, setPort, addObject, 
                 updateParams, repositionObj, deleteObject, 
-                changeOSCPath } = MainSlice.actions;
+                changeOSCPath, setEntireModel } = MainSlice.actions;
 
 export default MainSlice.reducer;

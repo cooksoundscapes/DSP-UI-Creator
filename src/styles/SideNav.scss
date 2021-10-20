@@ -36,27 +36,19 @@
     
 }
 
-.retry-button {
+.sidenav-button {
     @include neumorphism;
-    animation: fade-in .5s ease;
     margin-left: 13px;
     color: $white;
     border-radius: 4px;
-    padding: 0 4px;
-    padding-top: 2px;
-    vertical-align: bottom;
-    &:hover > * {
-        animation: spin-a-little .5s ease;
-        animation-fill-mode: forwards;
-        cursor: pointer;
-    }
+    padding: $spacing;
+    flex-grow: 1;
+    font-size: smaller;
+    text-align: center;
     &:active {
         @include neumorphism-inset;
     }   
-}
-
-@keyframes spin-a-little {
-    0% {transform: rotate(0);}
-    50% {filter: blur(.5px)}
-    100% {transform: rotate(90deg);}
+    & input {
+        display: none;
+    }
 }
