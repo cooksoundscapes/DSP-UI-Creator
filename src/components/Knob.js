@@ -2,22 +2,20 @@ const Knob = props => {
     const {min, max, value, size, ring, x, y} = props;
     const knobCenter = [size/2 + x, size/2 + y];
     const deegrees = ((.75*value/max)*360-135)%360;
-    console.log
     const turnKnob = () => {
         window.addEventListener('mousemove', moving)
         window.addEventListener('mouseup', endMove)
     }
     const moving = event => {
-        const move = [event.clientX, event.clientY];
         const deltas = [
-            move[1] - knobCenter[1],
-            move[0] - knobCenter[0]
+            event.clientY - knobCenter[1],
+            event.clientX - knobCenter[0]
         ]
         const radians = Math.atan2(...deltas);
         const deg = (radians * (180/Math.PI)+450) % 360;
         if (160 < deg && deg < 225) return; //dead zone!
         let newVal = ((deg+135)%360)/360*max*1.25; 
-        newVal = Math.max(min, Math.min(max, newVal))
+        newVal = Math.max(min, Math.min(max, newVal));
         props.sendMessage(props.id, 'value', newVal, props.path)
     }
     const endMove = () => {
@@ -47,8 +45,7 @@ const Knob = props => {
                 boxShadow: 'none'}}></span>
         </div>
             <span style={{  color: props.labelColor}}>
-                {props.label}
-                {Math.floor(value)} </span>
+                {props.label} </span>
         </div>
     )
 }
