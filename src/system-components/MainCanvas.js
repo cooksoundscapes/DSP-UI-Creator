@@ -134,14 +134,14 @@ export default function MainCanvas() {
                 background: editMode ? 'rgba(100,100,200,.4)' : null,
                 cursor: editMode ? 'move' : 'default',
             }
-            const key = tool.id;
             const wrapperProps = {
-                style, key, id:key, draggable: editMode, 
+                style, key:tool.id, id:tool.id, draggable: editMode, 
                 onDragStart: editMode ? startDrag: null,
                 onClick: editMode ? openMenu : null
             }
+            const {params, ...rest} = tool;
             const NewElement = React.createElement(library[tool.type], 
-                {...tool.params, id:tool.id, path:tool.path, sendMessage});
+                {...params, ...rest, sendMessage});
             return (
                 <div {...wrapperProps} > 
                     {editMode ? 

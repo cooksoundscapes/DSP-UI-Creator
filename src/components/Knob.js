@@ -1,16 +1,23 @@
 const Knob = props => {
-    const {min, max, value, size, ring} = props;
-    let startPos;
-    const turnKnob = event => {
-        startPos = [event.clientX, event.clientY];
+    const {min, max, value, size, ring, x, y} = props;
+    const knobCenter = [size/2 + x, size/2 + y];
+    const deegrees = ((.75*value/max)*360-135)%360;
+    console.log
+    const turnKnob = () => {
         window.addEventListener('mousemove', moving)
         window.addEventListener('mouseup', endMove)
     }
     const moving = event => {
-        const move = [event.clientX - startPos[0],
-                      event.clientY - startPos[1]];
-        const increment = move[0] - move[1];
-        const newVal = Math.max(min, Math.min(max, value + increment));
+        const move = [event.clientX, event.clientY];
+        const deltas = [
+            move[1] - knobCenter[1],
+            move[0] - knobCenter[0]
+        ]
+        const radians = Math.atan2(...deltas);
+        const deg = (radians * (180/Math.PI)+450) % 360;
+        if (160 < deg && deg < 225) return; //dead zone!
+        let newVal = ((deg+135)%360)/360*max*1.25; 
+        newVal = Math.max(min, Math.min(max, newVal))
         props.sendMessage(props.id, 'value', newVal, props.path)
     }
     const endMove = () => {
@@ -36,11 +43,12 @@ const Knob = props => {
                 style={{width: size, height: size}}></span>
             <span className={props.theme+'_knob'} onMouseDown={turnKnob}
                 style={{width: size, height: size,
-                transform: `rotate(${(value/max*270)-135}deg)`,
+                transform: `rotate(${deegrees}deg)`,
                 boxShadow: 'none'}}></span>
         </div>
             <span style={{  color: props.labelColor}}>
-                {props.label} </span>
+                {props.label}
+                {Math.floor(value)} </span>
         </div>
     )
 }
@@ -55,7 +63,7 @@ export const setup = {
     max: 127,
     value: 64,
     theme: 'basic',
-    ring: false,
+    ring: true,
     size: 48,
     markers: []
 }
