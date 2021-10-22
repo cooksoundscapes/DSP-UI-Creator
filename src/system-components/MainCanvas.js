@@ -22,10 +22,7 @@ export default function MainCanvas() {
             if( event.key == '.' && event.ctrlKey) {
                 dispatcher(toggleMode());
                 setObjMenu(null)
-            } else if (event.key == 'C' && event.ctrlKey) {
-                event.preventDefault()
-                console.log('gonna copy!')
-            }
+            } 
         }   
         window.addEventListener('keypress', toggleEdit);
         return () => window.removeEventListener('keypress', toggleEdit);
@@ -43,7 +40,7 @@ export default function MainCanvas() {
         const y = event.clientY - 22;
         const params = library[type+'_setup'];
         let count = 0;
-        for (item of objectModel) {
+        for (let item of objectModel) {
             if (item.type == type) count++
         }
         const id = type+(count+1);
@@ -118,7 +115,7 @@ export default function MainCanvas() {
         const sendMessage = (id, param, value, path) => {
             if (editMode) return;
             dispatcher(updateParams({id, param, value}));
-            window.electron.sendOSC(path, value, address);    
+            if (window.electron) window.electron.sendOSC(path, value, address);    
         }
         const openMenu = event => {
             event.stopPropagation()

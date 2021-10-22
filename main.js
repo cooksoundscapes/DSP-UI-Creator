@@ -9,8 +9,9 @@ function createWindow() {
             nodeIntegration: true,
             preload: path.join(__dirname, 'preload.js')
         }
-    })    
-    window.loadURL('http://localhost:1234')
+    }) 
+    //window.loadURL('http://localhost:8080')
+    window.loadFile('build/index.html')
     window.once('ready-to-show', () => {
         window.show()
     })

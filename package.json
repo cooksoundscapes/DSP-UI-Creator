@@ -1,29 +1,67 @@
 {
   "name": "dsp-ui-maker",
   "version": "1.0.0",
-  "description": "",
+  "description": "Fast prototype UIs for your favorite audio backend, manage panels, snapshots and talk to the audio engine via OSC messages;",
   "main": "main.js",
   "scripts": {
-    "start": "concurrently -k 'parcel index.html' 'wait-on tcp:1234 && electron .'"
+    "start": "concurrently -k 'webpack serve --config webpack.dev.js' 'wait-on tcp:8080 && electron .'",
+    "web": "webpack serve --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cooksoundscapes/dsp-ui-creator.git"
+  },
+  "build": {
+    "appId": "com.dsp-ui-creator.app",
+    "files": [
+      "./main.js",
+      "build/*",
+      "./preload.js"
+    ],
+    "mac": {
+      "category": "public.app-category.music"
+    },
+    "win": {
+      "target": "msi"
+    },
+    "linux": {
+      "target": "pacman",
+      "category": "music"
+    }
   },
   "keywords": [],
-  "author": "",
+  "author": "Paulo Medina <paulobmedina@gmail.com>",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cooksoundscapes/dsp-ui-creator/issues"
+  },
+  "homepage": "https://github.com/cooksoundscapes/dsp-ui-creator#readme",
   "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
     "@babel/preset-react": "^7.14.5",
-    "@parcel/transformer-sass": "^2.0.0-rc.0",
+    "babel-loader": "^8.2.3",
     "concurrently": "^6.3.0",
-    "parcel": "^2.0.0-rc.0",
-    "wait-on": "^6.0.0"
+    "css-loader": "^6.4.0",
+    "electron": "^15.3.0",
+    "electron-builder": "^22.13.1",
+    "html-loader": "^3.0.0",
+    "html-webpack-plugin": "^5.4.0",
+    "sass-loader": "^12.2.0",
+    "style-loader": "^3.3.1",
+    "wait-on": "^6.0.0",
+    "webpack": "^5.59.1",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.3.1",
+    "webpack-merge": "^5.8.0"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.6.2",
-    "electron": "^15.1.2",
     "osc": "^2.4.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-redux": "^7.2.5",
-    "react-router": "^5.2.1",
-    "react-icons": "^4.3.1"
+    "react-icons": "^4.3.1",
+    "react-redux": "^7.2.5"
   }
 }

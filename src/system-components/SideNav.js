@@ -42,8 +42,12 @@ export default function SideNav() {
                     </label>      
                     <label style={{width: '4em'}}>port:
                         <input spellCheck={false} type='text' 
+                        minLength='4' maxLength='5'
                         className='address-input' value={address[1]}
-                        onChange={ ({target}) => dispatcher(setPort(target.value))} />
+                        onChange={ ({target}) => {
+                            if (isNaN(parseInt(target.value))) return;
+                            dispatcher(setPort(target.value));
+                        }} />
                     </label>
                 </div> 
                 <button onClick={saveJson} className='sidenav-button'>

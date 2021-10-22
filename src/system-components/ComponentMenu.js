@@ -70,7 +70,6 @@ const ComponentMenu = props => {
         }
     }
     const handleChanges = event => {
-        console.log(typeof(event.target.checked))
         const value = helperType == 'checkbox' ? event.target.checked : event.target.value;
         if (helper == 'path') {
             if (!value.startsWith('/')) return;

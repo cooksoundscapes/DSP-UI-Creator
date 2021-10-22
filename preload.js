@@ -1,4 +1,4 @@
-const {contextBridge, ipcRenderer} = require('electron')
+const {contextBridge} = require('electron')
 const {UDPPort} = require('osc')
 
 let oscPort = new UDPPort({
