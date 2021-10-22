@@ -1,13 +1,15 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { setAddr, setPort, setEntireModel } from '../main-slice';
+import { setAddr, setPort, setEntireModel, setProjectName } from '../main-slice';
 import '../styles/SideNav.scss';
 import ToolBox from './ToolBox';
 
 export default function SideNav() {
     const editMode = useSelector( state => state.global.editMode);
     const address = useSelector( state => state.global.ipAddr);
-    const objectModel = useSelector( state => state.global.objectModel)
+    const objectModel = useSelector( state => state.global.objectModel);
+    const projName = useSelector( state => state.global.projectName)
     const dispatcher = useDispatch();
+    document.title = "DSP UI Creator - "+ (projName || 'new project');
 
     const saveJson = () => {
         const data = JSON.stringify({address, objectModel})
@@ -15,7 +17,7 @@ export default function SideNav() {
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url;
-        a.download = 'savedData';
+        a.download = projName || 'my-saved-project';
         document.body.appendChild(a);
         a.click()
         document.body.removeChild(a)
@@ -23,11 +25,13 @@ export default function SideNav() {
 
     const loadJson = event => {
         const file = event.target.files[0];
+        const name = file.name.split('.')[0];
         const reader = new FileReader();
         reader.readAsText(file);
         reader.onloadend = () => {
-            const json = JSON.parse(reader.result)
-            dispatcher(setEntireModel(json))
+            const json = JSON.parse(reader.result);
+            dispatcher(setEntireModel(json));
+            dispatcher(setProjectName(name));
         }
 
     }
@@ -51,10 +55,10 @@ export default function SideNav() {
                     </label>
                 </div> 
                 <button onClick={saveJson} className='sidenav-button'>
-                    Save...
-                    </button>
+                    Save Project
+                </button>
                 <label onChange={loadJson} className='sidenav-button'>
-                    Load...
+                    Load Project
                     <input type='file' accept='.json'/>
                 </label>
                 <ToolBox />

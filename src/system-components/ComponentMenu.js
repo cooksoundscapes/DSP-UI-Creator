@@ -8,10 +8,25 @@ import Tooltip from './Tooltip';
 
 const MoreMenu = props => {
     const renderItems = () => {
-        return props.items.map( (item, i) => (
-            <li onClick={() => props.paramGetter(item)} 
-                key={i}>{item[0]}</li>
-        ))
+        return props.items.map( (item, i) => {
+            const type = typeof(item[1]);
+            return (
+            <li onClick={type == 'string' ? () => props.paramSetter(item) : null} key={i}>
+                {item[0]}
+                {type == 'number' ?
+                    <input className='inline-helper' type='number' value={item[1]} 
+                        onChange={({target}) => {
+                            props.paramSetter(item, target.value)
+                        }} />
+                : type == 'boolean' ? 
+                    <input className='inline-helper' type='checkbox' checked={item[1]} 
+                        onChange={({target}) => {
+                            props.paramSetter(item, target.checked)
+                        }} />
+                : null}
+            </li>
+            )
+        })
     }
     return (
         <ul className='more-menu'>
@@ -23,7 +38,6 @@ const MoreMenu = props => {
 const ComponentMenu = props => {
     const [more, setMore] = useState(false);
     const [helper, setHelper] = useState(false);
-    const [helperType, setType] = useState('text')
     const helperRef = useRef();
     const objectModel = useSelector(state => state.global.objectModel);
     const dispatcher = useDispatch();
@@ -31,18 +45,21 @@ const ComponentMenu = props => {
     const targetObj = document.getElementById(props.targetid);
     const allParams = Object.entries(target.params);
     const validParams = allParams.filter( param => {
-        return !(['value','theme','size', 'label', 'container', 'description'].includes(param[0]))
+        return !(['value','theme','size', 'label', 
+                'container', 'description'].includes(param[0]))
     });
+
+    useEffect( () => {
+        if (helper) helperRef.current.focus()
+    }, [helper])
 
     const entries = [
         [<MdLabelOutline />, 'change label', () => {
             setHelper(helper != 'label' ? 'label' : null);
-            setType('text')
             setMore(false)
         }],
         ['OSC', 'change OSC path', () => {
             setHelper(helper != 'path' ? 'path' : null);
-            setType('text')
             setMore(false)  
         }],
         [<MdOutlineBrush />, 'change theme'],
@@ -56,21 +73,32 @@ const ComponentMenu = props => {
         }],
     ]
 
-    const processParam = param => {
-        if (typeof(param[1]) == 'string') {
-            setHelper(param[0])
-            setType('text')
-        } else if (typeof(param[1]) == 'number') {
-            setHelper(param[0])
-            setType('number')
-        }
-        else if (typeof(param[1]) == 'boolean') {
-            setHelper(param[0])
-            setType('checkbox')
+    const menuChanges = (item, value=null) => {
+        switch (typeof(item[1])) {
+            case 'string':
+                setHelper(item[0]);
+                break;
+            case 'number':
+                const newValue = !value ? 0 :
+                    Number.isInteger(value) ? 
+                    parseInt(value) : 
+                    parseFloat(value);
+                    dispatcher(updateParams({
+                        id: props.targetid, 
+                        param: item[0], 
+                        value: newValue}))
+                break;
+            case 'boolean':
+                dispatcher(updateParams({
+                    id: props.targetid, 
+                    param: item[0], 
+                    value: value}))
+                break;
         }
     }
+
     const handleChanges = event => {
-        const value = helperType == 'checkbox' ? event.target.checked : event.target.value;
+        const value = event.target.value;
         if (helper == 'path') {
             if (!value.startsWith('/')) return;
             dispatcher(changeOSCPath({id: props.targetid, path:value}));
@@ -78,10 +106,7 @@ const ComponentMenu = props => {
             dispatcher(updateParams({id: props.targetid, param: helper, value: value}))
         }
     }
-    useEffect( () => {
-        if (helper) helperRef.current.focus()
-    }, [helper])
-
+    
     const renderButtons = () => (
         entries.map( (item, index) => (
             <Tooltip key={index} text={item[1]} delay={250} balloon>
@@ -89,22 +114,23 @@ const ComponentMenu = props => {
             </Tooltip>
         ))
     )
-
     return (
         <nav onClick={event => event.stopPropagation()} className='component-menu'
-             style={{
-                 left: Math.max(16, Math.min(target.x+(targetObj.offsetWidth-270)/2, 
-                         window.innerWidth - 270)),
-                 top: target.y + (target.y > 100 ? -60 : targetObj.offsetHeight + 20)
-             }}>
+                style={{
+                        left: Math.max(16, Math.min(target.x+(targetObj.offsetWidth-270)/2, 
+                                window.innerWidth - 270)),
+                        top: target.y + (target.y > 100 ? -60 : targetObj.offsetHeight + 20)
+                }}>
             {renderButtons()}
-            { helper ? <input type={helperType} ref={helperRef} 
-                            onChange={handleChanges} 
-                            spellCheck={false}
-                            value={target[helper] || target.params[helper] || ''}
-                            checked={helperType == 'checkbox' ? target.params[helper] : null} />
+            { helper ? 
+                <input className='menu-helper' type='text' ref={helperRef} 
+                    onChange={handleChanges} 
+                    spellCheck={false}
+                    value={target[helper] || target.params[helper] || ''} />
             : null}
-            { more ? <MoreMenu paramGetter={processParam} items={validParams} /> : null}
+            { more ? 
+                <MoreMenu paramSetter={menuChanges} items={validParams} /> 
+            : null}
         </nav> 
     )
 }

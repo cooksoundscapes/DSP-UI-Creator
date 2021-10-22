@@ -24,7 +24,7 @@
             background-color: rgba(#eee,.5);
         }
     }
-    & input {
+    & .menu-helper {
         background-color: $paper-grey;
         color: $white;  
         position: absolute;
@@ -53,6 +53,7 @@
     border-radius: 2px;
     @include neumorphism;
     & li {
+        user-select: none;
         padding: $spacing*.5 $spacing;
         border-radius: 2px;
         &:hover {
@@ -60,6 +61,13 @@
             background-size: 300px 300px;
             animation: shine 1s;
             animation-fill-mode: forwards;
+        }
+        & .inline-helper {
+            background: none;
+            border: none;
+            max-width: 6em;
+            text-align: right;
+            color: $white;
         }
     }
 }

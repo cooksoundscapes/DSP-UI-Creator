@@ -5,14 +5,15 @@ export const MainSlice = createSlice({
     initialState: {
         editMode: true,
         objectModel: [],
-        ipAddr: ['localhost', 4444]
+        ipAddr: ['localhost', 4444],
+        projectName: null
     },
     reducers: {
         toggleMode: state => {state.editMode = !state.editMode},
         setAddr: (state, newAddr) => {state.ipAddr[0] = newAddr.payload},
         setPort: (state, newPort) => {state.ipAddr[1] = parseInt(newPort.payload)},
+        setProjectName: (state, newName) => {state.projectName = newName.payload},
         addObject: (state, newEntry) => {state.objectModel.push(newEntry.payload)},
-
         updateParams: (state, newData) => {
             const {id, param, value} = newData.payload;
             const index = state.objectModel.findIndex( i => i.id == id);
@@ -40,8 +41,8 @@ export const MainSlice = createSlice({
     }
 })
 
-export const { toggleMode, setAddr, setPort, addObject, 
-                updateParams, repositionObj, deleteObject, 
-                changeOSCPath, setEntireModel } = MainSlice.actions;
+export const { toggleMode, setAddr, setPort, setProjectName,
+                addObject, updateParams, repositionObj, 
+                deleteObject, changeOSCPath, setEntireModel } = MainSlice.actions;
 
 export default MainSlice.reducer;

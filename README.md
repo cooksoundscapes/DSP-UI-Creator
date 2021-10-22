@@ -7,4 +7,23 @@ Features:
 * Save locally with .json files or log in and keep the work on cloud
 * Snapshots for keeping different parameter settings for a panel
 * Built in command line tool for lauching the engine and keep things self-contained
+ToDO next:
+
+style more menu;
+custom app menu;
+save and save as(s);
+midi input support;
+
+panel functionality w/ osc root path
+alt+drag = copy!
+
+components:
+toggle;
+multi radio;
+audio meter;
+oscilloscope / fft;
+table sequencer;
+wavetable w/ drawing;
+
+
 

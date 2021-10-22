@@ -4,9 +4,10 @@
   "description": "Fast prototype UIs for your favorite audio backend, manage panels, snapshots and talk to the audio engine via OSC messages;",
   "main": "main.js",
   "scripts": {
-    "start": "concurrently -k 'webpack serve --config webpack.dev.js' 'wait-on tcp:8080 && electron .'",
+    "start": "export ELECTRON_DEVELOPMENT='true' && concurrently -k 'webpack serve --config webpack.dev.js' 'wait-on tcp:8080 && electron .'",
     "web": "webpack serve --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "faster": "electron ."
   },
   "repository": {
     "type": "git",

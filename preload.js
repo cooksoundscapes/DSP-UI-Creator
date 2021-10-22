@@ -1,4 +1,4 @@
-const {contextBridge} = require('electron')
+const {contextBridge, ipcRenderer} = require('electron')
 const {UDPPort} = require('osc')
 
 let oscPort = new UDPPort({
@@ -8,6 +8,12 @@ let oscPort = new UDPPort({
 oscPort.open()
 
 contextBridge.exposeInMainWorld('electron', {
+    askForCookie: () => new Promise( res => {
+        ipcRenderer.on('sendCookie', (e, arg) => {
+            res(arg)
+        });
+        ipcRenderer.send('askCookie', 'requesting cookie from main process')
+    }),
     sendOSC: (path, val, address ) => {
         let args;
         if (Array.isArray(val)) {
