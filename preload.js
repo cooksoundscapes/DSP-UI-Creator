@@ -8,11 +8,11 @@ let oscPort = new UDPPort({
 oscPort.open()
 
 contextBridge.exposeInMainWorld('electron', {
-    askForCookie: () => new Promise( res => {
-        ipcRenderer.on('sendCookie', (e, arg) => {
-            res(arg)
+    manageFiles: request => new Promise( (resolve, reject) => {
+        ipcRenderer.on('responseFS', (event, arg) => {
+            resolve(arg);
         });
-        ipcRenderer.send('askCookie', 'requesting cookie from main process')
+        ipcRenderer.send('requestFS', request);
     }),
     sendOSC: (path, val, address ) => {
         let args;

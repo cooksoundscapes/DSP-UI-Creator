@@ -13,28 +13,16 @@ export default function SideNav() {
 
     const saveJson = () => {
         const data = JSON.stringify({address, objectModel})
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url;
-        a.download = projName || 'my-saved-project';
-        document.body.appendChild(a);
-        a.click()
-        document.body.removeChild(a)
+        window.electron.manageFiles(data).then( woot => console.log(woot))
     }
 
-    const loadJson = event => {
-        const file = event.target.files[0];
-        const name = file.name.split('.')[0];
-        const reader = new FileReader();
-        reader.readAsText(file);
-        reader.onloadend = () => {
-            const json = JSON.parse(reader.result);
-            dispatcher(setEntireModel(json));
-            dispatcher(setProjectName(name));
-        }
-
+    const loadJson = () => {
+        window.electron.manageFiles('load').then( file => {
+            const openedProj = JSON.parse(file)
+            dispatcher(setEntireModel(openedProj));
+        }).catch( err => console.log('error loading file: ', err))
     }
+    
     return (
         <nav style={{width: editMode ? 200 : 0}} className='sidenav'>
             <div className='sidenav-container'>
@@ -57,12 +45,18 @@ export default function SideNav() {
                 <button onClick={saveJson} className='sidenav-button'>
                     Save Project
                 </button>
-                <label onChange={loadJson} className='sidenav-button'>
+                <button onClick={loadJson} className='sidenav-button'>
                     Load Project
-                    <input type='file' accept='.json'/>
-                </label>
+                </button>
                 <ToolBox />
             </div>              
         </nav>
     )   
 }           
+
+/*
+<label onChange={loadJson} className='sidenav-button'>
+    Load Project
+    <input type='file' accept='.json'/>
+</label>
+*/

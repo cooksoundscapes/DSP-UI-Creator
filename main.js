@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
-const path = require('path')
+const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
+const path = require('path');
+const fs = require('fs');
 const isDev = process.env.ELECTRON_DEVELOPMENT;
 
 function createWindow() {
@@ -33,7 +34,26 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit()
 })
 
-ipcMain.on('askCookie', (event, arg) => {
-    console.log(arg);
-    event.reply('sendCookie', 'main process responding.. ok!')
+ipcMain.on('requestFS', (event, req) => {
+    if (req == 'load') {
+        const loadOptions = {
+            title: 'Choose JSON File',
+            properties: ['openFile',]
+        }
+        dialog.showOpenDialog(loadOptions).then( files => {
+            const {filePaths} = files;
+            fs.readFile(filePaths[0], 'utf-8', (err, content) => {
+                if (err) event.reply('responseFS', err);
+                else event.reply('responseFS', content)
+            })
+        })
+    } else {
+        dialog.showSaveDialog({title: 'Name & save your project'}).then( pathObj => {
+            const {filePath} = pathObj;
+            fs.writeFile(filePath+'.json', req, err => {
+                if (err) event.reply('responseFS', err)
+                else event.reply('responseFS', 'file saved successfully.') 
+            })
+        })
+    }
 })
