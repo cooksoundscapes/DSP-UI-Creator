@@ -5,6 +5,7 @@ export const MainSlice = createSlice({
     initialState: {
         editMode: true,
         objectModel: [],
+        lastSave: '{"address":["localhost",4444],"objectModel":[]}',
         ipAddr: ['localhost', 4444],
         projectName: null
     },
@@ -13,6 +14,7 @@ export const MainSlice = createSlice({
         setAddr: (state, newAddr) => {state.ipAddr[0] = newAddr.payload},
         setPort: (state, newPort) => {state.ipAddr[1] = parseInt(newPort.payload)},
         setProjectName: (state, newName) => {state.projectName = newName.payload},
+        setLastSave: (state, lastSave) => {state.lastSave = lastSave.payload},
         addObject: (state, newEntry) => {state.objectModel.push(newEntry.payload)},
         updateParams: (state, newData) => {
             const {id, param, value} = newData.payload;
@@ -41,7 +43,7 @@ export const MainSlice = createSlice({
     }
 })
 
-export const { toggleMode, setAddr, setPort, setProjectName,
+export const { toggleMode, setAddr, setPort, setProjectName, setLastSave,
                 addObject, updateParams, repositionObj, 
                 deleteObject, changeOSCPath, setEntireModel } = MainSlice.actions;
 

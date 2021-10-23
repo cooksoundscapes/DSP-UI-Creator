@@ -45,6 +45,11 @@
     flex-grow: 1;
     font-size: smaller;
     text-align: center;
+    &:disabled {
+        color: darken($white, 50%);
+        background-color: darken($paper-grey, 5%);
+        box-shadow: none
+    }
     &:active {
         @include neumorphism-inset;
     }   

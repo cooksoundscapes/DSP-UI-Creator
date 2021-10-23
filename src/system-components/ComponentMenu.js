@@ -14,7 +14,7 @@ const MoreMenu = props => {
             <li onClick={type == 'string' ? () => props.paramSetter(item) : null} key={i}>
                 {item[0]}
                 {type == 'number' ?
-                    <input className='inline-helper' type='number' value={item[1]} 
+                    <input className='inline-helper' type='number' step='0.1' value={item[1]} 
                         onChange={({target}) => {
                             props.paramSetter(item, target.value)
                         }} />

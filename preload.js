@@ -10,7 +10,8 @@ oscPort.open()
 contextBridge.exposeInMainWorld('electron', {
     manageFiles: request => new Promise( (resolve, reject) => {
         ipcRenderer.on('responseFS', (event, arg) => {
-            resolve(arg);
+            if (arg instanceof Error) reject(arg);
+            else resolve(arg);
         });
         ipcRenderer.send('requestFS', request);
     }),

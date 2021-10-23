@@ -1,26 +1,64 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { setAddr, setPort, setEntireModel, setProjectName } from '../main-slice';
+import { setAddr, setPort, setEntireModel, 
+         setProjectName, setLastSave } from '../main-slice';
 import '../styles/SideNav.scss';
 import ToolBox from './ToolBox';
+import { useState } from 'react';
 
 export default function SideNav() {
+    const [openDialog, setDialog] = useState(false);
     const editMode = useSelector( state => state.global.editMode);
     const address = useSelector( state => state.global.ipAddr);
     const objectModel = useSelector( state => state.global.objectModel);
-    const projName = useSelector( state => state.global.projectName)
+    const projName = useSelector( state => state.global.projectName);
+    const lastSave = useSelector( state => state.global.lastSave);
     const dispatcher = useDispatch();
-    document.title = "DSP UI Creator - "+ (projName || 'new project');
-
-    const saveJson = () => {
-        const data = JSON.stringify({address, objectModel})
-        window.electron.manageFiles(data).then( woot => console.log(woot))
+    const unsaved = JSON.stringify({address, objectModel}) !== lastSave;
+    document.title = "DSP UI Creator - "+ (projName || 'new project') + (unsaved ? ' *' : '');
+   
+    const saveJson = (overwrite=false, loadAfter=false) => {
+        const data = JSON.stringify({address, objectModel});
+        const saveReq = !overwrite ? data : [data, projName];
+        setDialog(true);
+        window.electron.manageFiles(saveReq).then( name => {
+            dispatcher(setProjectName(name))
+            dispatcher(setLastSave(data));
+            setDialog(false);
+        }).catch( () => {   
+            console.log('Aborted saving file.');
+            setDialog(false)
+        }).finally( () => {if (loadAfter) loadJson(true)})
     }
-
-    const loadJson = () => {
-        window.electron.manageFiles('load').then( file => {
-            const openedProj = JSON.parse(file)
-            dispatcher(setEntireModel(openedProj));
-        }).catch( err => console.log('error loading file: ', err))
+    const loadJson = (skipCheck=false) => {
+        setDialog(true);
+        if (unsaved && !skipCheck) {
+            window.electron.manageFiles('save-warning').then( resp => {
+                switch (resp) {
+                    case 0:
+                        const exists = projName == true;
+                        saveJson(exists, true);
+                        break;
+                    case 1:
+                        loadJson(true);
+                        break;
+                    case 2:
+                        setDialog(false)
+                        break;
+                }
+            }).catch(err => {console.log(err)});  
+        } else {
+            window.electron.manageFiles('load').then( file => {
+                const openedProj = JSON.parse(file[0])
+                const name = file[1].split('.')[0];''
+                dispatcher(setProjectName(name))
+                dispatcher(setEntireModel(openedProj));
+                dispatcher(setLastSave(file[0]))
+                setDialog(false);
+            }).catch( () =>{ 
+                console.log('Aborted loading file.');
+                setDialog(false)
+            })
+        }  
     }
     
     return (
@@ -42,10 +80,13 @@ export default function SideNav() {
                         }} />
                     </label>
                 </div> 
-                <button onClick={saveJson} className='sidenav-button'>
-                    Save Project
+                <button disabled={!projName || openDialog} onClick={() => saveJson(true)} className='sidenav-button'>
+                    Save
                 </button>
-                <button onClick={loadJson} className='sidenav-button'>
+                <button disabled={openDialog} onClick={() => saveJson()} className='sidenav-button'>
+                    Save Project As...
+                </button>
+                <button disabled={openDialog} onClick={() => loadJson()} className='sidenav-button'>
                     Load Project
                 </button>
                 <ToolBox />
