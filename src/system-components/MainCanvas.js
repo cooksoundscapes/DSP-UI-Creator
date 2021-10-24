@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import * as library from '../components';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleMode, addObject, 
-        updateParams, repositionObj } from '../main-slice';
+         updateParams, repositionObj, 
+         setChildren } from '../main-slice';
 import ComponentMenu from './ComponentMenu';
 
 export default function MainCanvas() {
@@ -16,7 +17,7 @@ export default function MainCanvas() {
     const editMode = useSelector( state => state.global.editMode);
     const address = useSelector( state => state.global.ipAddr);
     const objectModel = useSelector( state => state.global.objectModel);
-    
+
     useEffect( () => {
         const toggleEdit = event => {
             if( event.key == '.' && event.ctrlKey) {
@@ -27,27 +28,43 @@ export default function MainCanvas() {
         window.addEventListener('keypress', toggleEdit);
         return () => window.removeEventListener('keypress', toggleEdit);
     })
-    const handleDragOver = event => {
-        event.preventDefault();
-    }
 
     const handleDrop = event => {
         const type = event.dataTransfer.getData('text');
-        if (!(type in library)) {
-            return
-        };
         const x = event.clientX - navWidth;    
         const y = event.clientY - 22;
-        const params = library[type+'_setup'];
-        let count = 0;
-        for (let item of objectModel) {
-            if (item.type == type) count++
+        const containers = objectModel.filter( obj => obj.params.hasOwnProperty('container'))
+        const targetContainer = containers.find( cont => (
+            cont.x < x && cont.y < y &&
+            (cont.params.size[0] + cont.x) > x && 
+            (cont.params.size[1] + cont.y) > y
+        ));
+        if (type in library) {
+            const params = library[type+'_setup'];
+            let count = 0;
+            for (let item of objectModel) {
+                if (item.type == type) count++
+            }
+            const id = type+(count+1);
+            const path = '/'+id;
+            const newEntry = {id, type, path, x, y, params};
+            if (targetContainer) newEntry.parentId = targetContainer.id;
+            dispatcher(addObject(newEntry))
+        } else {
+            const target = objectModel.find( obj => obj.id == type);
+            if (targetContainer && (targetContainer != target)) {
+                dispatcher(setChildren({
+                    parentId: targetContainer.id,
+                    childId: target.id
+                }));
+            } else {
+                dispatcher(setChildren({
+                    parentId: null,
+                    childId: target.id
+                }));
+            } 
         }
-        const id = type+(count+1);
-        const path = '/'+id;
-        const newEntry = {id, type, path, x, y, params};
-        if (params.container) newEntry.childNodes = [];
-        dispatcher(addObject(newEntry))
+       
     }
 
     const renderElements = () => {
@@ -57,7 +74,7 @@ export default function MainCanvas() {
             event.dataTransfer.setDragImage(dummy, 0, 0);
             event.dataTransfer.setData('text', event.target.id);
             event.dataTransfer.effectAllowed = 'move';
-            const object = event.currentTarget;
+            const object = event.target;
             const startMousePos = [event.clientX, event.clientY];
             const startObjectPos = [object.offsetLeft, object.offsetTop];
             let newX, newY;
@@ -85,7 +102,7 @@ export default function MainCanvas() {
             event.stopPropagation();
             const dummy = document.createElement('span');
             event.dataTransfer.setDragImage(dummy, 0, 0);
-            event.dataTransfer.setData('text', event.target.id);
+            event.dataTransfer.effectAllowed = 'move';
             const id = event.target.offsetParent.id;
             const obj = objectModel.find( o => o.id == id);
             const startSize = obj.params.size;
@@ -112,33 +129,40 @@ export default function MainCanvas() {
             window.addEventListener('drag', resize)
             window.addEventListener('dragend', endDrag)
         }
-        const sendMessage = (id, param, value, path) => {
-            if (editMode) return;
-            dispatcher(updateParams({id, param, value}));
-            if (window.electron) window.electron.sendOSC(path, value, address);    
-        }
         const openMenu = event => {
             event.stopPropagation()
             if (event.target.id == menuTarget) setObjMenu(null);
             else setObjMenu(event.target.id)
         }
         return objectModel.map( tool => {
-            const style = {
+            const {params, ...rest} = tool;
+            const wrapperStyle = {
                 position: 'absolute',
                 left: Math.floor(tool.x/grid)*grid,
                 top: Math.floor(tool.y/grid)*grid,
                 padding: editMode ? grid/2 : 0,
                 background: editMode ? 'rgba(100,100,200,.4)' : null,
                 cursor: editMode ? 'move' : 'default',
+                zIndex: params.container ? 0 : 100
             }
             const wrapperProps = {
-                style, key:tool.id, id:tool.id, draggable: editMode, 
+                style: wrapperStyle, 
+                key:tool.id, id:tool.id, 
+                draggable: editMode, 
                 onDragStart: editMode ? startDrag: null,
                 onClick: editMode ? openMenu : null
             }
-            const {params, ...rest} = tool;
-            const NewElement = React.createElement(library[tool.type], 
-                {...params, ...rest, sendMessage});
+            const elementProps = {
+                sendMessage: (path, param, value) => {
+                    const rootPath = tool.parentId ? 
+                        objectModel.find( o => o.id == tool.parentId).path : '';
+                    dispatcher(updateParams({id: tool.id, param, value}));
+                    if (window.electron) window.electron.sendOSC(rootPath+path, value, address);    
+                },
+                ...params,
+                ...rest,
+            }
+            const NewElement = React.createElement(library[tool.type], elementProps);
             return (
                 <div {...wrapperProps} > 
                     {editMode ? 
@@ -164,8 +188,11 @@ export default function MainCanvas() {
     const closeObjMenu = () => { 
         setObjMenu(null)
     }
+
     return (
-        <main onClick={closeObjMenu} onDrop={handleDrop} onDragOver={handleDragOver} style={{flexGrow: 1}}>
+        <main onClick={closeObjMenu} 
+              onDrop={handleDrop} 
+              onDragOver={e => e.preventDefault()} style={{flexGrow: 1}}>
             <div className='tab-container' style={{left: editMode ? navWidth : 0}}> 
                     {renderTabs()} 
                     <button className='add-tab' onClick={ () => setPages(pages+1) }>+</button>

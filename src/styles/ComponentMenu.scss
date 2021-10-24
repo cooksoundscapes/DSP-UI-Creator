@@ -1,6 +1,7 @@
 @use 'library' as *;
 
 .component-menu {
+    z-index: 200;
     display: flex;
     gap: 2px;
     justify-content: space-between;

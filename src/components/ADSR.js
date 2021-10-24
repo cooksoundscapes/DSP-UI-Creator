@@ -70,12 +70,12 @@ const ADSR = props => {
             case 0:
                 change = move[0] * -.01;
                 curveChange = Math.max(0,Math.min(1,AtkCurve + move[1]*.01));
-                props.sendMessage(props.id, 'AtkCurve', curveChange, path+'/curve/A')
+                props.sendMessage(path+'/curve/A', 'AtkCurve', curveChange)
                 break;
             case 1:
                 change = move[0] * .01;
                 curveChange = Math.max(0,Math.min(1,DecCurve + move[1]*.01));
-                props.sendMessage(props.id, 'DecCurve', curveChange, path+'/curve/D')
+                props.sendMessage(path+'/curve/D', 'DecCurve', curveChange)
                 break;
             case 2:
                 change = move[1] * -.01;
@@ -83,14 +83,14 @@ const ADSR = props => {
             case 3:
                 change = move[0] * .01;
                 curveChange = Math.max(0,Math.min(1,RelCurve + move[1]*.01));
-                props.sendMessage(props.id, 'RelCurve', curveChange, path+'/curve/R')
+                props.sendMessage(path+'/curve/R', 'RelCurve', curveChange)
                 break;
         }
         change = Math.max(0, Math.min(1, lin_value[type] + change));
         let newValue = [...lin_value];
         newValue[type] = change;
         newValue = newValue.map( (v,i) => i == 2 ? v : Math.pow(v,4)*maxTime)
-        props.sendMessage(props.id, 'value', newValue, path);
+        props.sendMessage(path, 'value', newValue);
     }
     const endMove = () => {
         window.removeEventListener('mousemove', moving)

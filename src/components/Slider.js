@@ -2,7 +2,7 @@
 const Slider = (props) => {
     
     const handleChange = ({target}) => {
-        props.sendMessage(props.id, 'value', target.value, props.path)
+        props.sendMessage(props.path, 'value', target.value)
     }
     
     return (

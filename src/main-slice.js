@@ -21,6 +21,11 @@ export const MainSlice = createSlice({
             const index = state.objectModel.findIndex( i => i.id == id);
             state.objectModel[index].params[param] = value;  
         },
+        changeOSCPath: (state, newPath) => {
+            const {id, path} = newPath.payload;
+            const index = state.objectModel.findIndex( i => i.id == id);
+            state.objectModel[index].path = path;
+        },
         repositionObj: (state, newPos) => {
             const {id,newX,newY} = newPos.payload;
             const index = state.objectModel.findIndex( i => i.id == id);
@@ -31,10 +36,10 @@ export const MainSlice = createSlice({
             const index = state.objectModel.findIndex( i => i.id == id.payload);
             state.objectModel.splice(index, 1)
         },
-        changeOSCPath: (state, newPath) => {
-            const {id, path} = newPath.payload;
-            const index = state.objectModel.findIndex( i => i.id == id);
-            state.objectModel[index].path = path;
+        setChildren: (state, brats) => {
+            const {parentId, childId} = brats.payload;
+            const childIndex = state.objectModel.findIndex( i => i.id == childId);
+            state.objectModel[childIndex].parentId = parentId;
         },
         setEntireModel: (state, newModel) => {
             state.objectModel = newModel.payload.objectModel;
@@ -44,7 +49,7 @@ export const MainSlice = createSlice({
 })
 
 export const { toggleMode, setAddr, setPort, setProjectName, setLastSave,
-                addObject, updateParams, repositionObj, 
+                addObject, updateParams, repositionObj, setChildren, 
                 deleteObject, changeOSCPath, setEntireModel } = MainSlice.actions;
 
 export default MainSlice.reducer;

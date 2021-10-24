@@ -16,7 +16,7 @@ const Knob = props => {
         if (160 < deg && deg < 225) return; //dead zone!
         let newVal = ((deg+135)%360)/360*max*1.25; 
         newVal = Math.max(min, Math.min(max, newVal));
-        props.sendMessage(props.id, 'value', newVal, props.path)
+        props.sendMessage(props.path,'value', newVal)
     }
     const endMove = () => {
         window.removeEventListener('mousemove', moving)
