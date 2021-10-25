@@ -3,7 +3,7 @@ import MainCanvas from './system-components/MainCanvas';
 import SideNav from './system-components/SideNav';
 import { Provider as ReduxProvider} from 'react-redux';
 import {IconContext} from 'react-icons';
-import store from './store';
+import store from './lib/store';
 import './styles/baseline.css';
 import './themes/index.scss';
 

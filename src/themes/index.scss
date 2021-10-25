@@ -9,8 +9,7 @@
 }   
 
 [class$='_panel'] {
-    display: grid;
     padding: $spacing;
     border-radius: 2px;
-    place-items: center;
+    text-align: center;
 }

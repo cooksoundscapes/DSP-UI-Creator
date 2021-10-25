@@ -1,6 +1,6 @@
 import * as tools from '../components';
 import '../styles/ToolBox.scss';
-import Tooltip from '../system-components/Tooltip';
+import Tooltip from './Tooltip';
 
 const ToolBox = () => {
     const handleDrag = event => {

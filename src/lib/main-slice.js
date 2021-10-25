@@ -49,7 +49,7 @@ export const MainSlice = createSlice({
 })
 
 export const { toggleMode, setAddr, setPort, setProjectName, setLastSave,
-                addObject, updateParams, repositionObj, setChildren, 
-                deleteObject, changeOSCPath, setEntireModel } = MainSlice.actions;
+               addObject, updateParams, repositionObj, setChildren, 
+               deleteObject, changeOSCPath, setEntireModel } = MainSlice.actions;
 
 export default MainSlice.reducer;

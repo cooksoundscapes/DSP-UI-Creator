@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { setAddr, setPort, setEntireModel, 
-         setProjectName, setLastSave } from '../main-slice';
+         setProjectName, setLastSave } from '../lib/main-slice';
 import '../styles/SideNav.scss';
 import ToolBox from './ToolBox';
 import { useState } from 'react';
