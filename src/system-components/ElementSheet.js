@@ -10,26 +10,49 @@ const ElementSheet = props => {
     const address = useSelector( state => state.global.ipAddr);
     const {grid, setObjMenu, menuTarget, setDragging} = props;
 
-    const startDrag = event => {
+    const snapToGrid = value => {
+        return Math.floor(value/grid)*grid;
+    }
+
+    const startDrag = (event, tool) => {
         setDragging(true)
+        const object = event.currentTarget;
+        if (event.altKey) {
+            event.dataTransfer.setData('text', JSON.stringify(tool));
+            event.dataTransfer.effectAllowed = 'copy';
+            return;
+        }
+        const id = tool.id;
         const dummy = document.createElement('span');
         event.dataTransfer.setDragImage(dummy, 0, 0);
-        event.dataTransfer.setData('text', event.target.id);
+        event.dataTransfer.setData('text', id);
         event.dataTransfer.effectAllowed = 'move';
-        const object = event.target;
-        const startMousePos = [event.clientX, event.clientY];
-        const startObjectPos = [object.offsetLeft, object.offsetTop];
-        let newX, newY;
+        let inner;
+        if (tool.params.container) {
+            inner = objectModel.filter( obj => (
+                obj.x >= tool.x &&
+                obj.y >= tool.y &&
+                obj.x < (tool.x + tool.params.size[0]) &&
+                obj.y < (tool.y + tool.params.size[1])
+            ))
+        }
+        const startPos = [event.clientX, event.clientY];
         const _moveEl = event => {
-            const moveX = event.clientX - startMousePos[0];
-            const moveY = event.clientY - startMousePos[1];
-            const maxX = window.innerWidth - object.offsetWidth;
-            const maxY = window.innerHeight - object.offsetHeight;
-            newX = Math.min(maxX, startObjectPos[0]+moveX);
-            newY = Math.min(maxY, startObjectPos[1]+moveY);
-            if (newX > 0 && newY > 0) {
-                const id = object.id;
-                dispatcher(repositionObj({id, newX, newY}))
+            const move = [snapToGrid(event.clientX - startPos[0]),
+                          snapToGrid(event.clientY - startPos[1])];
+            const max = [window.innerWidth - object.offsetWidth,
+                         window.innerHeight - object.offsetHeight];    
+            const newX = tool.x+move[0];
+            const newY = tool.y+move[1];
+            if (newX > 0 && newX < max[0] && newY > 0 && newY < max[1]) {
+                if (tool.params.container && inner.length > 0) {
+                    inner.forEach( child => {
+                        const childX = child.x+move[0];
+                        const childY = child.y+move[1];
+                        dispatcher(repositionObj({id: child.id, x: childX, y: childY}));
+                    })
+                }
+                dispatcher(repositionObj({id, x: newX, y: newY}));
             }
         }
         const _endDrag = () => {
@@ -40,29 +63,29 @@ const ElementSheet = props => {
         object.addEventListener('drag', _moveEl);
         object.addEventListener('dragend', _endDrag);
     }
-    const startResizing = event => {
+    const startResizing = (event, tool) => {
         event.stopPropagation();
         const dummy = document.createElement('span');
         event.dataTransfer.setDragImage(dummy, 0, 0);
         event.dataTransfer.effectAllowed = 'move';
-        const id = event.target.offsetParent.id;
-        const obj = objectModel.find( o => o.id == id);
-        const startSize = obj.params.size;
+        const id = tool.id;
+        const startSize = tool.params.size;
         const startPos = [event.clientX, event.clientY];
         const resize = event => {
             let value;
-            let move = [event.clientX - startPos[0],
+            const move = [event.clientX - startPos[0],
                         event.clientY - startPos[1]];
             if (Array.isArray(startSize)) {
-                value = [
-                    Math.max(grid, Math.floor(move[0]/grid)*grid+startSize[0]),
-                    Math.max(grid, Math.floor(move[1]/grid)*grid+startSize[1]),
-                ]
+                value = move.map( (n,i) => snapToGrid(n) + startSize[i]);
             } else {
-                move = move[0] + move[1]; 
-                value = Math.max(grid, Math.floor(move/grid)*grid+startSize);
+                value = snapToGrid(move[0]+move[1]) + startSize;
             }
-            dispatcher(updateParams({id, param:'size', value}))
+            if ((value > 0) || value.every(n => n>0)) {
+                if (Array.isArray(value)) {
+                    value.map( n => Math.max(grid, n));
+                } else value = Math.max(grid, value);
+                dispatcher(updateParams({id, param:'size', value}))
+            }
         }
         const endDrag = () => { 
             window.removeEventListener('drag', resize)
@@ -80,8 +103,8 @@ const ElementSheet = props => {
         const {params, ...rest} = tool;
         const wrapperStyle = {
             position: 'absolute',
-            left: Math.floor(tool.x/grid)*grid,
-            top: Math.floor(tool.y/grid)*grid,
+            left: snapToGrid(tool.x),
+            top: snapToGrid(tool.y),
             padding: editMode ? grid/2 : 0,
             background: editMode ? 'rgba(100,100,200,.4)' : null,
             cursor: editMode ? 'move' : 'default',
@@ -91,7 +114,7 @@ const ElementSheet = props => {
             style: wrapperStyle, 
             key:tool.id, id:tool.id, 
             draggable: editMode, 
-            onDragStart: editMode ? startDrag: null,
+            onDragStart: editMode ? e => startDrag(e, tool): null,
             onClick: editMode ? openMenu : null
         }
         const elementProps = {
@@ -111,7 +134,7 @@ const ElementSheet = props => {
                     <>
                         <div style={{pointerEvents: 'none'}}>{NewElement}</div> 
                         <div className='resizing-tool' 
-                             onDragStart={startResizing} draggable
+                             onDragStart={e => startResizing(e, tool)} draggable
                              style={{width: grid, height: grid}}></div>
                     </>
                     : NewElement}
@@ -120,7 +143,7 @@ const ElementSheet = props => {
     });
     return (
         <>
-            {model}
+        {model}
         </>
     )
 }

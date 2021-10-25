@@ -21,13 +21,15 @@ export default function SideNav() {
         const saveReq = !overwrite ? data : [data, projName];
         setDialog(true);
         window.electron.manageFiles(saveReq).then( name => {
+            if (!name) return;
             dispatcher(setProjectName(name))
             dispatcher(setLastSave(data));
-            setDialog(false);
         }).catch( () => {   
             console.log('Aborted saving file.');
-            setDialog(false)
-        }).finally( () => {if (loadAfter) loadJson(true)})
+        }).finally( () => {
+            setDialog(false);
+            if (loadAfter) loadJson(true);
+        })
     }
     const loadJson = (skipCheck=false) => {
         setDialog(true);

@@ -27,10 +27,10 @@ export const MainSlice = createSlice({
             state.objectModel[index].path = path;
         },
         repositionObj: (state, newPos) => {
-            const {id,newX,newY} = newPos.payload;
+            const {id, x, y} = newPos.payload;
             const index = state.objectModel.findIndex( i => i.id == id);
-            state.objectModel[index].x = newX;
-            state.objectModel[index].y = newY
+            state.objectModel[index].x = x;
+            state.objectModel[index].y = y
         },
         deleteObject: (state, id) => {
             const index = state.objectModel.findIndex( i => i.id == id.payload);

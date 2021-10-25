@@ -28,7 +28,7 @@ export default function MainCanvas() {
     })
 
     const handleDrop = event => {
-        const type = event.dataTransfer.getData('text');
+        let type = event.dataTransfer.getData('text');
         const x = event.clientX - navWidth;    
         const y = event.clientY - 22;
         const containers = objectModel.filter( obj => obj.params.hasOwnProperty('container'))
@@ -37,8 +37,14 @@ export default function MainCanvas() {
             (cont.params.size[0] + cont.x) > x && 
             (cont.params.size[1] + cont.y) > y
         ));
+        let params;
+        try {
+            const clone = JSON.parse(type);
+            type = clone.type;
+            params = clone.params;
+        } catch (e) {}
         if (type in library) {
-            const params = library[type+'_setup'];
+            params = params || library[type+'_setup'];
             let count = 0;
             for (let item of objectModel) {
                 if (item.type == type) count++
@@ -50,12 +56,13 @@ export default function MainCanvas() {
             dispatcher(addObject(newEntry))
         } else {
             const target = objectModel.find( obj => obj.id == type);
-            if (targetContainer && (targetContainer != target)) {
+            if (!target) return;
+            else if (targetContainer && (targetContainer != target)) {
                 dispatcher(setChildren({
                     parentId: targetContainer.id,
                     childId: target.id
                 }));
-            } else if (targetContainer) {
+            } else if (!targetContainer) {
                 dispatcher(setChildren({
                     parentId: null,
                     childId: target.id
