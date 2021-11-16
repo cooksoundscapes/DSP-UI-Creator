@@ -1,13 +1,28 @@
 const {contextBridge, ipcRenderer} = require('electron')
 const {UDPPort} = require('osc')
+const dgram = require('dgram');
 
-let oscPort = new UDPPort({
+const oscPort = new UDPPort({
     localAddress: 'localhost',
     localPort: 4445
 })
 oscPort.open()
 
+oscPort.on('ready', () => {
+    ipcRenderer.send('oscSink', "Listening OSC messages on port 4445")
+})
+
+const audio_port = 5678
+
+const audio_server = dgram.createSocket('udp4');
+audio_server.bind(audio_port)
+
+audio_server.on('listening', () => {
+    console.log(`listening on localhost:${audio_port}`)
+})
+
 contextBridge.exposeInMainWorld('electron', {
+    //switch to the invoke method
     manageFiles: request => new Promise( (resolve, reject) => {
         ipcRenderer.on('responseFS', (event, arg) => {
             if (arg instanceof Error) reject(arg);
@@ -15,7 +30,11 @@ contextBridge.exposeInMainWorld('electron', {
         });
         ipcRenderer.send('requestFS', request);
     }),
-    sendOSC: (path, val, address ) => {
+    receiveOSC: callback => {
+        oscPort.removeAllListeners('message')
+        oscPort.on('message', (msg, timetag, address) => callback({msg, timetag, address}))
+    },
+    sendOSC: (path, val, address) => {
         let args;
         if (Array.isArray(val)) {
             args = val.map( item => ({
@@ -39,5 +58,9 @@ contextBridge.exposeInMainWorld('electron', {
             localPort: newPort
         })
         oscPort.open()
-    }
+    },
+    listenToAudio: callback => {
+        audio_server.on('message', (msg,info) => callback(msg,info))
+    },
+    stopListenToAudio: () => audio_server.removeAllListeners()
 })

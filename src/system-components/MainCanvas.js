@@ -2,7 +2,7 @@ import '../styles/MainCanvas.scss';
 import React, { useState, useEffect } from 'react';
 import * as library from '../components';
 import { useSelector, useDispatch } from 'react-redux';
-import { toggleMode, addObject, setChildren } from '../lib/main-slice';
+import { toggleMode, addObject, setChildren} from '../lib/main-slice';
 import ElementSheet from './ElementSheet';
 import ComponentMenu from './ComponentMenu';    
 
@@ -15,7 +15,7 @@ export default function MainCanvas() {
     const objectModel = useSelector( state => state.global.objectModel);
     const navWidth = 200;
     const grid = 16;
-
+      
     useEffect( () => {
         const toggleEdit = event => {
             if( event.key == '.' && event.ctrlKey) {

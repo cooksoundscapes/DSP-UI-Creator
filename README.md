@@ -7,23 +7,14 @@ Features:
 * Save locally with .json files or log in and keep the work on cloud
 * Snapshots for keeping different parameter settings for a panel
 * Built in command line tool for lauching the engine and keep things self-contained
-ToDO next:
 
-style more menu;
-custom app menu;
-save and save as(s);
-midi input support;
-
-panel functionality w/ osc root path
-alt+drag = copy!
-
-components:
-toggle;
-multi radio;
-audio meter;
-oscilloscope / fft;
-table sequencer;
-wavetable w/ drawing;
+Questions:
+OSC isn't enough for capturing audio inputs/outputs or sharing large arrays between the audio app and node. Couple of solutions comes to mind using C++ Node.js addons: 
+1. Plataform-dependent audio clients with in/out ports (JACK, Asio, etc)
+    * that would need dynamic input creation!
+2. wrapper for the application, e.g: Pure data => libpd => node-gyp
+3. temporary file for array sharing
+4. wrap UI-Creator into something VST-like (is it possible?)
 
 
 

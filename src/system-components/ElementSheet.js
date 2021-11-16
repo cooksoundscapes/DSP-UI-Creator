@@ -9,9 +9,23 @@ const ElementSheet = props => {
     const editMode = useSelector( state => state.global.editMode);
     const address = useSelector( state => state.global.ipAddr);
     const {grid, setObjMenu, menuTarget, setDragging} = props;
-
+    
+    window.electron.receiveOSC( ({msg}) => {
+        const receivers = objectModel.filter( obj => (
+            obj.path == msg.address && obj.params.receiver
+        ));
+        if (receivers.length > 0) {
+            receivers.forEach( obj => {
+                dispatcher(updateParams({
+                    id: obj.id, 
+                    param: 'income', 
+                    value: msg.args 
+                }))
+            })
+        }
+    })
     const snapToGrid = value => {
-        return Math.floor(value/grid)*grid;
+        return Math.ceil(value/grid)*grid;
     }
 
     const startDrag = (event, tool) => {
@@ -33,7 +47,8 @@ const ElementSheet = props => {
                 obj.x >= tool.x &&
                 obj.y >= tool.y &&
                 obj.x < (tool.x + tool.params.size[0]) &&
-                obj.y < (tool.y + tool.params.size[1])
+                obj.y < (tool.y + tool.params.size[1]) &&
+                obj.id !== tool.id
             ))
         }
         const startPos = [event.clientX, event.clientY];

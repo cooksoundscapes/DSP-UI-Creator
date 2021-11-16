@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+
 const isDev = process.env.ELECTRON_DEVELOPMENT;
 const homeFolder = app.getPath('home');
 

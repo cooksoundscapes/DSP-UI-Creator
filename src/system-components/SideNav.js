@@ -91,7 +91,7 @@ export default function SideNav() {
                 <button disabled={openDialog} onClick={() => loadJson()} className='sidenav-button'>
                     Load Project
                 </button>
-                <ToolBox />
+                <ToolBox />             
             </div>              
         </nav>
     )   
