@@ -6,3 +6,4 @@ export { default as Knob, setup as Knob_setup } from './Knob';
 export { default as Panel, setup as Panel_setup } from './Panel';
 export { default as Logger, setup as Logger_setup } from './Logger';
 export { default as AudioInput, setup as AudioInput_setup } from './AudioInput';
+export { default as Toggle, setup as Toggle_setup } from './Toggle';

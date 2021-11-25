@@ -21,7 +21,6 @@ sock = socket(AF_INET, SOCK_DGRAM)
 #async def start_stream(websocket, path):
 #    while True:
 #        try:
-#
 #            data = stream.read(window_size)
 #            await websocket.send(data)
 #            await asyncio.sleep(.03)

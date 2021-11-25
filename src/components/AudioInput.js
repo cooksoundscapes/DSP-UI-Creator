@@ -1,9 +1,29 @@
-import bambro from '../lib/bambro_loop_fixed.wav'
 import { useEffect, useRef, useState } from "react";
 
 const AudioInput = props => {
     const scope = useRef();
-    const waveFrame = (canvas, buffer) => {
+    const audio = useRef();
+
+    return (
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            margin: 0, padding: 10,
+            background: "cadetblue",
+            color: "#e1e1e1"
+        }}>
+            Look mum, I'm receiving audio!
+            <audio ref={audio} src='http://localhost:5678/stream' controls autoPlay/>
+            <canvas ref={scope} />
+        </div>
+    )
+}
+
+export default AudioInput;
+export const setup = {level: 0}
+
+/*
+const waveFrame = (canvas, buffer) => {
         const ctx = canvas.getContext('2d');
         const {width, height} = canvas;
         const jump = buffer.length / width;
@@ -30,32 +50,4 @@ const AudioInput = props => {
         ctx.rect(0,0,level,height)
         ctx.fill()
     }   
-    useEffect( () => {
-        const cnv = scope.current;
-        window.electron.listenToAudio( (msg, info) => {
-            const arrbuff = msg.buffer
-            let buffer = new Float32Array(arrbuff)
-            requestAnimationFrame(() => meter(cnv, buffer))
-        })  
-        
-        return () => {
-            window.electron.stopListenToAudio()
-        } 
-    }, [])
-
-    return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            margin: 0, padding: 10,
-            background: "cadetblue",
-            color: "#e1e1e1"
-        }}>
-            Look mum, I'm receiving audio!
-            <canvas ref={scope} />
-        </div>
-    )
-}
-
-export default AudioInput;
-export const setup = {level: 0}
+*/
