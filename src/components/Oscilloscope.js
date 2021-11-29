@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 const Oscilloscope = props => {
     const scope = useRef();
 
-    useEffect( () => {
+    /*useEffect( () => {
         let buffer, floatArr, jump, ctx;
         const canvas = scope.current;
         const {width, height} = canvas;
         window.electron.listenToAudio( (msg, info) => {
             buffer = msg.buffer;
-            floatArr =new Float32Array(buffer);
+            floatArr = new Float32Array(buffer);
             jump = floatArr.length / width;
             //Draw!
             requestAnimationFrame( () => {
@@ -25,7 +25,13 @@ const Oscilloscope = props => {
                 ctx.stroke()
             });
         })
-    }, []);
+    }, []);*/
+    useEffect( () => {
+        const sock = new WebSocket('ws://localhost:5678/');
+        sock.onmessage = event => {
+            console.log(event)
+        }
+    }, [])
 
     return (
         <div style={{
@@ -38,4 +44,4 @@ const Oscilloscope = props => {
 }
 
 export default Oscilloscope;
-export const setup = {level: 0}
+export const setup = {}
