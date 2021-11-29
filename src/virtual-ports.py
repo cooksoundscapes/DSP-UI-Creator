@@ -18,18 +18,6 @@ HOST = "localhost"
 PORT = 5678
 
 sock = socket(AF_INET, SOCK_DGRAM)
-#async def start_stream(websocket, path):
-#    while True:
-#        try:
-#            data = stream.read(window_size)
-#            await websocket.send(data)
-#            await asyncio.sleep(.03)
-#        except Exception as error:
-#           print(error)
-#           return
-#async def main():
-#   async with websockets.serve(start_stream, HOST, PORT):
-#       await asyncio.Future()
 
 while True:
     try:
@@ -38,8 +26,23 @@ while True:
     except KeyboardInterrupt:
         break
     
+#async def start_stream(websocket, path):
+#    while True:
+#        try:
+#            data = stream.read(window_size)
+#            await websocket.send(data)
+#        except Exception as error:
+#           print(error)
+#           return
+
+#async def main():
+#   async with websockets.serve(start_stream, HOST, PORT):
+#        await asyncio.Future()
 
 #asyncio.run(main())
+
+
+
 
 
 
