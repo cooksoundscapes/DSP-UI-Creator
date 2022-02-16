@@ -1,5 +1,8 @@
 Fast prototype UIs for your favorite audio backend, manage panels, snapshots and talk to the audio engine via OSC messages;  
 
+![](usage.gif)
+
+
 Features:  
 * Growing list of ready-to-use, commonly required elements, such as ADSR panels, transport, wave visualizers, filter and modulation panels . Full list [here](link)
 * Comprehensive list of atom like components like knobs, toggles, combo boxes, etc
