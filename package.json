@@ -1,5 +1,5 @@
 {
-  "name": "dsp-ui-maker",
+  "name": "dsp-ui-editor",
   "version": "1.0.0",
   "description": "Fast prototype UIs for your favorite audio backend, manage panels, snapshots and talk to the audio engine via OSC messages;",
   "main": "main.js",
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/cooksoundscapes/dsp-ui-creator.git"
   },
   "build": {
-    "appId": "com.dsp-ui-creator.app",
+    "appId": "com.dsp-ui-editor.app",
     "files": [
       "./main.js",
       "build/*",

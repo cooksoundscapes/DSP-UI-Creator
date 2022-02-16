@@ -16,6 +16,7 @@ def process_audio(nframes):
     buffer = channels[0].get_buffer()
     sock.sendto(buffer, (HOST,PORT))
 
+print(f"Activating Jack client. Sending data to UDP port {PORT};")
 jackCli.activate()
 
 while True:

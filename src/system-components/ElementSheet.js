@@ -28,27 +28,27 @@ const ElementSheet = props => {
         return Math.ceil(value/grid)*grid;
     }
 
-    const startDrag = (event, tool) => {
+    const startDrag = (event, component) => {
         setDragging(true)
         const object = event.currentTarget;
         if (event.altKey) {
-            event.dataTransfer.setData('text', JSON.stringify(tool));
+            event.dataTransfer.setData('text', JSON.stringify(component));
             event.dataTransfer.effectAllowed = 'copy';
             return;
         }
-        const id = tool.id;
+        const id = component.id;
         const dummy = document.createElement('span');
         event.dataTransfer.setDragImage(dummy, 0, 0);
         event.dataTransfer.setData('text', id);
         event.dataTransfer.effectAllowed = 'move';
         let inner;
-        if (tool.params.container) {
+        if (component.params.container) {
             inner = objectModel.filter( obj => (
-                obj.x >= tool.x &&
-                obj.y >= tool.y &&
-                obj.x < (tool.x + tool.params.size[0]) &&
-                obj.y < (tool.y + tool.params.size[1]) &&
-                obj.id !== tool.id
+                obj.x >= component.x &&
+                obj.y >= component.y &&
+                obj.x < (component.x + component.params.size[0]) &&
+                obj.y < (component.y + component.params.size[1]) &&
+                obj.id !== component.id
             ))
         }
         const startPos = [event.clientX, event.clientY];
@@ -57,10 +57,10 @@ const ElementSheet = props => {
                           snapToGrid(event.clientY - startPos[1])];
             const max = [window.innerWidth - object.offsetWidth,
                          window.innerHeight - object.offsetHeight];    
-            const newX = tool.x+move[0];
-            const newY = tool.y+move[1];
+            const newX = component.x+move[0];
+            const newY = component.y+move[1];
             if (newX > 0 && newX < max[0] && newY > 0 && newY < max[1]) {
-                if (tool.params.container && inner.length > 0) {
+                if (component.params.container && inner.length > 0) {
                     inner.forEach( child => {
                         const childX = child.x+move[0];
                         const childY = child.y+move[1];
@@ -78,13 +78,14 @@ const ElementSheet = props => {
         object.addEventListener('drag', _moveEl);
         object.addEventListener('dragend', _endDrag);
     }
-    const startResizing = (event, tool) => {
+    const startResizing = (event, component) => {
         event.stopPropagation();
         const dummy = document.createElement('span');
         event.dataTransfer.setDragImage(dummy, 0, 0);
         event.dataTransfer.effectAllowed = 'move';
-        const id = tool.id;
-        const startSize = tool.params.size;
+        const id = component.id;
+        const startSize = component.params.size;
+        if (!startSize) return;
         const startPos = [event.clientX, event.clientY];
         const resize = event => {
             let value;
@@ -114,12 +115,12 @@ const ElementSheet = props => {
         if (event.target.id == menuTarget) setObjMenu(null);
         else setObjMenu(event.target.id)
     }
-    const model = objectModel.map( tool => {
-        const {params, ...rest} = tool;
+    const objectSheet = objectModel.map( component => {
+        const {params, ...rest} = component;
         const wrapperStyle = {
             position: 'absolute',
-            left: snapToGrid(tool.x),
-            top: snapToGrid(tool.y),
+            left: snapToGrid(component.x),
+            top: snapToGrid(component.y),
             padding: editMode ? grid/2 : 0,
             background: editMode ? 'rgba(100,100,200,.4)' : null,
             cursor: editMode ? 'move' : 'default',
@@ -127,40 +128,39 @@ const ElementSheet = props => {
         }
         const wrapperProps = {
             style: wrapperStyle, 
-            key:tool.id, id:tool.id, 
+            key:component.id, 
+            id:component.id, 
             draggable: editMode, 
-            onDragStart: editMode ? e => startDrag(e, tool): null,
+            onDragStart: editMode ? e => startDrag(e, component): null,
             onClick: editMode ? openMenu : null
         }
         const elementProps = {
-            sendMessage: (path, param, value) => {
-                const rootPath = tool.parentId ? 
-                    objectModel.find( o => o.id == tool.parentId).path : '';
-                dispatcher(updateParams({id: tool.id, param, value}));
+            sendMessage: (value, param=null, path=rest.path) => {
+                const rootPath = component.parentId ? 
+                    objectModel.find( o => o.id == component.parentId).path : '';
+                if (param) {
+                    dispatcher(updateParams({id: component.id, param, value}));
+                }
                 if (window.electron) window.electron.sendOSC(rootPath+path, value, address);    
             },
             ...params,
             ...rest,
         }
-        const NewElement = React.createElement(library[tool.type], elementProps);
+        const NewElement = React.createElement(library[component.type], elementProps);
         return (
             <div {...wrapperProps} > 
                 {editMode ? 
                     <>
                         <div style={{pointerEvents: 'none'}}>{NewElement}</div> 
                         <div className='resizing-tool' 
-                             onDragStart={e => startResizing(e, tool)} draggable
+                             onDragStart={e => startResizing(e, component)} draggable
                              style={{width: grid, height: grid}}></div>
                     </>
                     : NewElement}
             </div>
         )
     });
-    return (
-        <>
-        {model}
-        </>
-    )
+    return objectSheet
 }
     
 

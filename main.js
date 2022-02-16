@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const {spawn} = require('child_process');
 
 const isDev = process.env.ELECTRON_DEVELOPMENT;
 const homeFolder = app.getPath('home');
@@ -23,7 +24,9 @@ function createWindow() {
     window.maximize()
 }
 
-!isDev ? Menu.setApplicationMenu(null) : null;
+if (!isDev) {
+    Menu.setApplicationMenu(null)
+}
 
 app.whenReady().then( () => {
     createWindow()
@@ -34,6 +37,7 @@ app.whenReady().then( () => {
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit()
+    virtualPorts.kill()
 })
 
 ipcMain.on('requestFS', (event, req) => {
@@ -86,3 +90,7 @@ ipcMain.on('requestFS', (event, req) => {
         }).catch( err => event.reply('responseFS', err))
     }
 })
+
+const virtualPorts = spawn('python', ['virtual-audio-ports.py']);
+virtualPorts.stdout.on('data', data => console.log(`stdout: ${data}`))
+virtualPorts.stderr.on('data', data => console.log(`stderr: ${data}`))

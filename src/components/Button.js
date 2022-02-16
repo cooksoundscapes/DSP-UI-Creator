@@ -11,7 +11,7 @@ const Button =  props => {
 
     return (
         <div>
-            <button onClick={() => props.sendMessage(props.path, 'click', 'bang')}
+            <button onClick={() => props.sendMessage('bang')}
                     className={props.theme+'_button'}
                     style={measures}>
                 {props.label}

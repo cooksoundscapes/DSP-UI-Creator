@@ -29,6 +29,15 @@ export default function MainCanvas() {
 
     const handleDrop = event => {
         let type = event.dataTransfer.getData('text');
+        /* There's 3 possibilities for the drop data:
+            1: a Type of component ("Button", "Slider", "ADSR"):
+                this will create a new object;
+            2: an existing object ID ("Button1", "ADSR3"):
+                usually the object is being moved.
+            3: cloned object JSON data:
+                object dropped with Alt key pressed: copy object;
+        */ 
+        let params;
         const x = event.clientX - navWidth;    
         const y = event.clientY - 22;
         const containers = objectModel.filter( obj => obj.params.hasOwnProperty('container'))
@@ -37,12 +46,12 @@ export default function MainCanvas() {
             (cont.params.size[0] + cont.x) > x && 
             (cont.params.size[1] + cont.y) > y
         ));
-        let params;
         try {
             const clone = JSON.parse(type);
             type = clone.type;
             params = clone.params;
-        } catch (e) {}
+        }
+        catch (e) {}
         if (type in library) {
             params = params || library[type+'_setup'];
             let count = 0;
@@ -70,7 +79,6 @@ export default function MainCanvas() {
             } 
         }  
     }
-
     const renderTabs = () => {
         const tabs = [];
         for (let i = 0; i < pages; i++) {

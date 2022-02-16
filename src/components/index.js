@@ -7,3 +7,4 @@ export { default as Panel, setup as Panel_setup } from './Panel';
 export { default as Logger, setup as Logger_setup } from './Logger';
 export { default as Oscilloscope, setup as Oscilloscope_setup } from './Oscilloscope';
 export { default as Toggle, setup as Toggle_setup } from './Toggle';
+export { default as MultiRadio, setup as MultiRadio_setup} from './MultiRadio'

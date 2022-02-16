@@ -3,7 +3,10 @@ const Toggle = props => {
     <label style={{color: "white"}}>
         {props.label}
     <input type="checkbox" 
-        onChange={event => props.sendMessage(props.path, "state", event.target.value)}
+        onChange={event => {
+            props.sendMessage(parseInt(+event.target.checked), 'state');
+            console.log(event.target.checked)
+        }}
     />
     </label>
     )

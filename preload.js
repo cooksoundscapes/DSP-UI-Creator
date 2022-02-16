@@ -62,5 +62,5 @@ contextBridge.exposeInMainWorld('electron', {
     listenToAudio: callback => {
         audio_server.on('message', (msg,info) => callback(msg,info))
     },
-    stopListenToAudio: () => audio_server.removeAllListeners()
+    removeAudioListeners: () => audio_server.removeAllListeners()
 })

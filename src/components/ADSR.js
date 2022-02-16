@@ -70,12 +70,12 @@ const ADSR = props => {
             case 0:
                 change = move[0] * -.01;
                 curveChange = Math.max(0,Math.min(1,AtkCurve + move[1]*.01));
-                props.sendMessage(path+'/curve/A', 'AtkCurve', curveChange)
+                props.sendMessage(curveChange, 'AtkCurve', path+'/curve/A');
                 break;
             case 1:
                 change = move[0] * .01;
                 curveChange = Math.max(0,Math.min(1,DecCurve + move[1]*.01));
-                props.sendMessage(path+'/curve/D', 'DecCurve', curveChange)
+                props.sendMessage(curveChange, 'DecCurve', path+'/curve/D');
                 break;
             case 2:
                 change = move[1] * -.01;
@@ -83,14 +83,14 @@ const ADSR = props => {
             case 3:
                 change = move[0] * .01;
                 curveChange = Math.max(0,Math.min(1,RelCurve + move[1]*.01));
-                props.sendMessage(path+'/curve/R', 'RelCurve', curveChange)
+                props.sendMessage(curveChange, 'RelCurve', path+'/curve/R');
                 break;
         }
         change = Math.max(0, Math.min(1, lin_value[type] + change));
         let newValue = [...lin_value];
         newValue[type] = change;
         newValue = newValue.map( (v,i) => i == 2 ? v : Math.pow(v,4)*maxTime)
-        props.sendMessage(path, 'value', newValue);
+        props.sendMessage(newValue, 'value', path);
     }
     const endMove = () => {
         window.removeEventListener('mousemove', moving)

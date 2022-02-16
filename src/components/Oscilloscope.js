@@ -3,14 +3,14 @@ import { useEffect, useRef } from "react";
 const Oscilloscope = props => {
     const scope = useRef();
 
-    /*useEffect( () => {
+    useEffect( () => {
         let buffer, floatArr, jump, ctx;
         const canvas = scope.current;
         const {width, height} = canvas;
-        window.electron.listenToAudio( (msg, info) => {
-            buffer = msg.buffer;
+        window.electron.listenToAudio( (audio_data, info) => {
+            buffer = audio_data.buffer;
             floatArr = new Float32Array(buffer);
-            jump = floatArr.length / width;
+            jump = width / floatArr.length;
             //Draw!
             requestAnimationFrame( () => {
                 ctx = canvas.getContext('2d');
@@ -25,23 +25,22 @@ const Oscilloscope = props => {
                 ctx.stroke()
             });
         })
-    }, []);*/
-    useEffect( () => {
-        const sock = new WebSocket('ws://localhost:5678/');
-        sock.onmessage = event => {
-            console.log(event)
-        }
-    }, [])
+        return () => window.electron.removeAudioListeners()
+    }, [props.size])
 
     return (
         <div style={{
             margin: 0, padding: 10,
             background: "#d1d1d1",
         }}>
-            <canvas ref={scope} />
+            <canvas ref={scope} width={props.size[0]} height={props.size[1]}/>
         </div>
     )
 }
 
 export default Oscilloscope;
-export const setup = {}
+export const setup = {
+    description: "Basic wave oscilloscope",
+    label: "Scope-1",
+    size: [256, 150]
+}
